@@ -35,7 +35,6 @@ impl Solution for Day {
 
 #[derive(Debug, Clone)]
 struct Card {
-    id: usize,
     winning: Vec<usize>,
     actual: Vec<usize>,
 }
@@ -53,8 +52,7 @@ impl FromStr for Card {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let (id, numbers) = s.split_once(':').unwrap();
-        let id = id.split_whitespace().collect::<Vec<&str>>()[1].parse::<usize>().unwrap();
+        let (_, numbers) = s.split_once(':').unwrap();
         let (winning, actual) = numbers.split_once('|').unwrap();
         let winning = winning
             .trim()
@@ -67,7 +65,6 @@ impl FromStr for Card {
             .map(|s| s.parse::<usize>().unwrap())
             .collect::<Vec<usize>>();
         Ok(Card {
-            id,
             winning,
             actual,
         })

@@ -5,17 +5,17 @@ use crate::solution::Solution;
 pub struct Day;
 
 impl Solution for Day {
-    fn part1(&self, input: &str) -> Option<u64> {
+    fn part1(&self, input: &str) -> Option<usize> {
         let plan: Plan = input.parse().unwrap();
-        plan.parts.iter().map(|part| part.id).sum::<u64>().into()
+        plan.parts.iter().map(|part| part.id).sum::<usize>().into()
     }
 
-    fn part2(&self, input: &str) -> Option<u64> {
+    fn part2(&self, input: &str) -> Option<usize> {
         let plan: Plan = input.parse().unwrap();
         plan.get_gears()
             .iter()
             .map(|(a, b)| a.id * b.id)
-            .sum::<u64>()
+            .sum::<usize>()
             .into()
     }
 }
@@ -96,28 +96,28 @@ impl FromStr for Plan {
                 let mut chars = line.chars().enumerate().peekable();
                 let mut numbers = Vec::new();
                 let mut number = 0;
-                let mut start = u64::MAX;
+                let mut start = usize::MAX;
                 while chars.peek().is_some() {
                     let (col, c) = chars.next().unwrap();
                     if c.is_numeric() {
                         number = number * 10 + c.to_digit(10).unwrap() as usize;
-                        if start == u64::MAX {
-                            start = col as u64;
+                        if start == usize::MAX {
+                            start = col as usize;
                         }
-                    } else if start != u64::MAX {
+                    } else if start != usize::MAX {
                         numbers.push(Part {
-                            id: number as u64,
+                            id: number as usize,
                             row,
                             col: start as usize,
                             length: col - start as usize,
                         });
                         number = 0;
-                        start = u64::MAX;
+                        start = usize::MAX;
                     }
                 }
-                if start != u64::MAX {
+                if start != usize::MAX {
                     numbers.push(Part {
-                        id: number as u64,
+                        id: number as usize,
                         row,
                         col: start as usize,
                         length: line.len() - start as usize,
@@ -135,7 +135,7 @@ impl FromStr for Plan {
 
 #[derive(Debug, Clone)]
 struct Part {
-    id: u64,
+    id: usize,
     row: usize,
     col: usize,
     length: usize,

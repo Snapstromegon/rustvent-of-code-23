@@ -3,7 +3,7 @@ use crate::solution::Solution;
 pub struct Day;
 
 impl Solution for Day {
-    fn part1(&self, input: &str) -> Option<u64> {
+    fn part1(&self, input: &str) -> Option<usize> {
         Some(
             input
                 .lines()
@@ -12,13 +12,13 @@ impl Solution for Day {
                     let first = digits.clone().next().unwrap();
                     let last = digits.last().unwrap();
                     let number = first.to_string() + &last.to_string();
-                    number.parse::<u64>().unwrap()
+                    number.parse::<usize>().unwrap()
                 })
-                .sum::<u64>(),
+                .sum::<usize>(),
         )
     }
 
-    fn part2(&self, input: &str) -> Option<u64> {
+    fn part2(&self, input: &str) -> Option<usize> {
         Some(
             input
                 .lines()
@@ -51,7 +51,7 @@ impl Solution for Day {
                     }
 
                     (earliest_word.to_string() + &latest_word.to_string())
-                        .parse::<u64>()
+                        .parse::<usize>()
                         .unwrap()
                 })
                 .sum(),

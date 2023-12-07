@@ -1,6 +1,7 @@
 mod day01;
 mod day02;
 mod day03;
+mod day04;
 mod solution;
 use solution::Solution;
 
@@ -14,13 +15,14 @@ fn read_input(day: u8, example: bool) -> String {
 }
 
 fn main() {
-    let day = 3;
+    let day = 4;
     let example = false;
     let input = read_input(day, example);
     let solution: Box<dyn Solution> = match day {
         1 => Box::new(day01::Day),
         2 => Box::new(day02::Day),
         3 => Box::new(day03::Day),
+        4 => Box::new(day04::Day),
         _ => unreachable!("Day {} not implemented", day),
     };
     let start = std::time::Instant::now();

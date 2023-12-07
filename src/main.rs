@@ -4,6 +4,7 @@ mod day01;
 mod day02;
 mod day03;
 mod day04;
+mod day05;
 mod solution;
 use solution::Solution;
 
@@ -36,6 +37,7 @@ fn main() {
         2 => Some(Box::new(day02::Day)),
         3 => Some(Box::new(day03::Day)),
         4 => Some(Box::new(day04::Day)),
+        5 => Some(Box::new(day05::Day)),
         _ => None,
     };
     if let Some(solution) = solution {

@@ -16,17 +16,17 @@ impl Solution for Day {
                 .iter()
                 .map(race_win_range)
                 .map(|(min, max)| max - min + 1)
-                .fold(1, |a, b| a * b) as usize,
+                .product::<i64>() as usize,
         )
     }
 
     fn part2(&self, input: &str) -> Option<usize> {
         let lines: Vec<i64> = input
             .lines()
-            .map(|line| line.split_once(':').unwrap().1.trim().replace(" ", ""))
+            .map(|line| line.split_once(':').unwrap().1.trim().replace(' ', ""))
             .map(|s| s.parse::<i64>().unwrap())
             .collect();
-        let race = (lines[0] as i64, lines[1] as i64);
+        let race = (lines[0], lines[1]);
         let win_range = race_win_range(&race);
         Some((win_range.1 - win_range.0 + 1) as usize)
     }

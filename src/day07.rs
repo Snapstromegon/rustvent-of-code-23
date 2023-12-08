@@ -19,8 +19,18 @@ impl Solution for Day {
         Some(winnings)
     }
 
-    fn part2(&self, _input: &str) -> Option<usize> {
-        None
+    fn part2(&self, input: &str) -> Option<usize> {
+        let mut hands = input
+            .lines()
+            .map(|line| line.parse::<Hand>().unwrap())
+            .map(|hand| hand.jokerize())
+            .collect::<Vec<Hand>>();
+        hands.sort();
+        let winnings = hands
+            .iter()
+            .enumerate()
+            .map(|(i, hand)| (hand, hand.bid * (i + 1)));
+        Some(winnings.map(|(_, bid)| bid).sum::<usize>())
     }
 }
 
@@ -41,33 +51,65 @@ impl Hand {
         }
     }
 
+    fn jokerize(&self) -> Self {
+        let jokerized: Vec<Card> = self.cards.iter().map(|c| c.jokerize()).collect();
+        let new_hand_type = Self::get_hand_type(&jokerized);
+        Self {
+            cards: jokerized,
+            hand_type: new_hand_type,
+            bid: self.bid,
+        }
+    }
+
     fn get_hand_type(cards: &[Card]) -> Type {
         let mut counts = HashMap::new();
         for card in cards {
             *counts.entry(card).or_insert(0) += 1;
         }
+        let jokers = counts.remove(&Card::Joker).unwrap_or(0);
+        if jokers == 5 {
+            return Type::FiveOfAKind;
+        }
         let mut counts = counts.into_iter().collect::<Vec<_>>();
         counts.sort_by(|a, b| b.1.cmp(&a.1));
-        let (card, count) = counts[0];
-        match count {
-            5 => Type::FiveOfAKind,
-            4 => Type::FourOfAKind,
-            3 => {
-                if counts.len() == 2 {
-                    Type::FullHouse
-                } else {
-                    Type::ThreeOfAKind
+        let (_card, count) = counts[0];
+        if jokers > 0 {
+            let count = count + jokers;
+            match count {
+                5 => Type::FiveOfAKind,
+                4 => Type::FourOfAKind,
+                3 => {
+                    if counts.len() == 2 {
+                        Type::FullHouse
+                    } else {
+                        Type::ThreeOfAKind
+                    }
                 }
+                2 => Type::OnePair,
+                1 => Type::HighCard,
+                _ => panic!("Invalid card count"),
             }
-            2 => {
-                if counts.len() == 3 {
-                    Type::TwoPair
-                } else {
-                    Type::OnePair
+        } else {
+            match count {
+                5 => Type::FiveOfAKind,
+                4 => Type::FourOfAKind,
+                3 => {
+                    if counts.len() == 2 {
+                        Type::FullHouse
+                    } else {
+                        Type::ThreeOfAKind
+                    }
                 }
+                2 => {
+                    if counts.len() == 3 {
+                        Type::TwoPair
+                    } else {
+                        Type::OnePair
+                    }
+                }
+                1 => Type::HighCard,
+                _ => panic!("Invalid card count"),
             }
-            1 => Type::HighCard,
-            _ => panic!("Invalid card count"),
         }
     }
 }
@@ -88,31 +130,31 @@ impl FromStr for Hand {
 
 impl PartialOrd for Hand {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(match self.hand_type.cmp(&other.hand_type) {
-            std::cmp::Ordering::Equal => {
-                for i in 0..self.cards.len() {
-                    let compare = self.cards[i].cmp(&other.cards[i]);
-                    if compare != std::cmp::Ordering::Equal {
-                        return Some(compare);
-                    }
-                }
-                std::cmp::Ordering::Equal
-            }
-            x => x,
-        })
+        Some(self.cmp(other))
     }
 }
 
 impl Ord for Hand {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.partial_cmp(other).unwrap()
+        match self.hand_type.cmp(&other.hand_type) {
+            std::cmp::Ordering::Equal => {
+                for i in 0..self.cards.len() {
+                    let compare = self.cards[i].cmp(&other.cards[i]);
+                    if compare != std::cmp::Ordering::Equal {
+                        return compare;
+                    }
+                }
+                std::cmp::Ordering::Equal
+            }
+            x => x,
+        }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[repr(u8)]
 enum Card {
-    JOKER,
+    Joker,
     C2,
     C3,
     C4,
@@ -131,7 +173,7 @@ enum Card {
 impl Card {
     fn jokerize(self) -> Self {
         match self {
-            Self::CJ => Self::JOKER,
+            Self::CJ => Self::Joker,
             x => x,
         }
     }

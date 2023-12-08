@@ -1,7 +1,4 @@
-use std::{
-    collections::{HashMap, HashSet},
-    str::FromStr,
-};
+use std::{collections::HashMap, str::FromStr};
 
 use crate::solution::Solution;
 
@@ -9,7 +6,7 @@ pub struct Day;
 
 impl Solution for Day {
     fn part1(&self, input: &str) -> Option<usize> {
-        let (path, rest) = input.split_once("\r\n\r\n").unwrap();
+        let (path, rest) = input.split_once("\n\n").unwrap();
         let map: Map = rest.parse().unwrap();
         let path: Vec<Direction> = path.chars().map(|c| c.into()).collect();
         if map.mapping.contains_key("AAA") {
@@ -27,7 +24,7 @@ impl Solution for Day {
     }
 
     fn part2(&self, input: &str) -> Option<usize> {
-        let (path, rest) = input.split_once("\r\n\r\n").unwrap();
+        let (path, rest) = input.split_once("\n\n").unwrap();
         let map: Map = rest.parse().unwrap();
         let path: Vec<Direction> = path.chars().map(|c| c.into()).collect();
         let starts: Vec<&str> = map
@@ -36,7 +33,6 @@ impl Solution for Day {
             .filter(|k| k.ends_with('A'))
             .map(|s| &s[..])
             .collect();
-        println!("Starts: {starts:?}");
         let mut loops = Vec::new();
         let mut z_pos = HashMap::new();
 
@@ -54,7 +50,7 @@ impl Solution for Day {
                 if let Some(loop_start) = loop_detector.get(&state) {
                     loops.push((
                         start,
-                        loop_start.clone(),
+                        *loop_start,
                         z_pos
                             .get(start)
                             .expect(&("Could not find z_pos for ".to_owned() + start))
@@ -67,12 +63,27 @@ impl Solution for Day {
                 curr = map.step(curr, dir);
             }
         }
-        println!("Loops: {loops:?}");
 
         // All loops only contain one Z element, which is also the same as the loop length.
         // For this reason you just need to calculate the least common multiple of all these values
-        assert!(loops.iter().all(|looped| looped.2.len() == 1 && looped.2[0] == looped.3));
-        None
+        assert!(loops
+            .iter()
+            .all(|looped| looped.2.iter().any(|l| l.eq(&looped.3))));
+        let loop_lengths: Vec<usize> = loops.iter().map(|looped| looped.3).collect();
+        let lcm = loop_lengths.iter().fold(1, |acc, &x| lcm(acc, x));
+        Some(lcm)
+    }
+}
+
+pub fn lcm(a: usize, b: usize) -> usize {
+    a * b / gcd(a, b)
+}
+
+pub fn gcd(a: usize, b: usize) -> usize {
+    if b == 0 {
+        a
+    } else {
+        gcd(b, a % b)
     }
 }
 

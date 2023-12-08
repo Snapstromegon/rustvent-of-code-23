@@ -15,19 +15,19 @@ impl Solution for Day {
             .split_whitespace()
             .map(|s| s.parse::<usize>().unwrap())
             .collect::<Vec<usize>>();
-        let mappings: Vec<(&str, Map)> = blocks.map(|block| parseMapping(block)).collect();
+        let mappings: Vec<(&str, Map)> = blocks.map(|block| parse_mapping(block)).collect();
         let alm = Almanac {
-            seedToSoil: mappings[0].1.clone(),
-            soilToFertilizer: mappings[1].1.clone(),
-            fertilizerToWater: mappings[2].1.clone(),
-            waterToLight: mappings[3].1.clone(),
-            lightToTemperature: mappings[4].1.clone(),
-            temperatureToHumidity: mappings[5].1.clone(),
-            humidityToLocation: mappings[6].1.clone(),
+            seed_to_soil: mappings[0].1.clone(),
+            soil_to_fertilizer: mappings[1].1.clone(),
+            fertilizer_to_water: mappings[2].1.clone(),
+            water_to_light: mappings[3].1.clone(),
+            light_to_temperature: mappings[4].1.clone(),
+            temperature_to_humidity: mappings[5].1.clone(),
+            humidity_to_location: mappings[6].1.clone(),
         };
         let mut sorted = seeds
             .iter()
-            .map(|seed| alm.mapSeedToLocation(*seed))
+            .map(|seed| alm.map_seed_to_location(*seed))
             .collect::<Vec<usize>>();
         sorted.sort();
 
@@ -36,7 +36,7 @@ impl Solution for Day {
 
     fn part2(&self, input: &str) -> Option<usize> {
         let mut blocks = input.split("\r\n\r\n");
-        let seedPairs = blocks
+        let seed_pairs = blocks
             .next()
             .unwrap()
             .split_once(':')
@@ -49,47 +49,47 @@ impl Solution for Day {
             .chunks_exact(2)
             .map(|chunk| (chunk[0], chunk[0] + chunk[1] - 1))
             .collect::<Vec<(usize, usize)>>();
-        let mappings: Vec<(&str, Map)> = blocks.map(|block| parseMapping(block)).collect();
+        let mappings: Vec<(&str, Map)> = blocks.map(|block| parse_mapping(block)).collect();
         let alm = Almanac {
-            seedToSoil: mappings[0].1.clone(),
-            soilToFertilizer: mappings[1].1.clone(),
-            fertilizerToWater: mappings[2].1.clone(),
-            waterToLight: mappings[3].1.clone(),
-            lightToTemperature: mappings[4].1.clone(),
-            temperatureToHumidity: mappings[5].1.clone(),
-            humidityToLocation: mappings[6].1.clone(),
+            seed_to_soil: mappings[0].1.clone(),
+            soil_to_fertilizer: mappings[1].1.clone(),
+            fertilizer_to_water: mappings[2].1.clone(),
+            water_to_light: mappings[3].1.clone(),
+            light_to_temperature: mappings[4].1.clone(),
+            temperature_to_humidity: mappings[5].1.clone(),
+            humidity_to_location: mappings[6].1.clone(),
         };
         for i in 0..100 {
-            assert!(alm.seedToSoil.map(i) == alm.mapSeedToSoil(i));
-            assert!(alm.seedToSoil.unmap(i) == alm.mapSoilToSeed(i));
-            assert!(alm.soilToFertilizer.map(alm.seedToSoil.map(i)) == alm.mapSeedToFertilizer(i));
-            assert!(alm.seedToSoil.unmap(alm.soilToFertilizer.unmap(i)) == alm.mapFertilizerToSeed(i));
-            assert!(alm.fertilizerToWater.map(alm.soilToFertilizer.map(alm.seedToSoil.map(i))) == alm.mapSeedToWater(i));
-            assert!(alm.seedToSoil.unmap(alm.soilToFertilizer.unmap(alm.fertilizerToWater.unmap(i))) == alm.mapWaterToSeed(i));
-            assert!(alm.waterToLight.map(alm.fertilizerToWater.map(alm.soilToFertilizer.map(alm.seedToSoil.map(i)))) == alm.mapSeedToLight(i));
-            assert!(alm.seedToSoil.unmap(alm.soilToFertilizer.unmap(alm.fertilizerToWater.unmap(alm.waterToLight.unmap(i)))) == alm.mapLightToSeed(i));
-            assert!(alm.lightToTemperature.map(alm.waterToLight.map(alm.fertilizerToWater.map(alm.soilToFertilizer.map(alm.seedToSoil.map(i))))) == alm.mapSeedToTemperature(i));
-            assert!(alm.seedToSoil.unmap(alm.soilToFertilizer.unmap(alm.fertilizerToWater.unmap(alm.waterToLight.unmap(alm.lightToTemperature.unmap(i))))) == alm.mapTemperatureToSeed(i));
-            assert!(alm.temperatureToHumidity.map(alm.lightToTemperature.map(alm.waterToLight.map(alm.fertilizerToWater.map(alm.soilToFertilizer.map(alm.seedToSoil.map(i)))))) == alm.mapSeedToHumidity(i));
-            assert!(alm.seedToSoil.unmap(alm.soilToFertilizer.unmap(alm.fertilizerToWater.unmap(alm.waterToLight.unmap(alm.lightToTemperature.unmap(alm.temperatureToHumidity.unmap(i)))))) == alm.mapHumidityToSeed(i));
-            assert!(alm.humidityToLocation.map(alm.temperatureToHumidity.map(alm.lightToTemperature.map(alm.waterToLight.map(alm.fertilizerToWater.map(alm.soilToFertilizer.map(alm.seedToSoil.map(i))))))) == alm.mapSeedToLocation(i));
-            assert!(alm.seedToSoil.unmap(alm.soilToFertilizer.unmap(alm.fertilizerToWater.unmap(alm.waterToLight.unmap(alm.lightToTemperature.unmap(alm.temperatureToHumidity.unmap(alm.humidityToLocation.unmap(i))))))) == alm.mapLocationToSeed(i));
+            assert!(alm.seed_to_soil.map(i) == alm.map_seed_to_soil(i));
+            assert!(alm.seed_to_soil.unmap(i) == alm.map_soil_to_seed(i));
+            assert!(alm.soil_to_fertilizer.map(alm.seed_to_soil.map(i)) == alm.map_seed_to_fertilizer(i));
+            assert!(alm.seed_to_soil.unmap(alm.soil_to_fertilizer.unmap(i)) == alm.map_fertilizer_to_seed(i));
+            assert!(alm.fertilizer_to_water.map(alm.soil_to_fertilizer.map(alm.seed_to_soil.map(i))) == alm.map_seed_to_water(i));
+            assert!(alm.seed_to_soil.unmap(alm.soil_to_fertilizer.unmap(alm.fertilizer_to_water.unmap(i))) == alm.map_water_to_seed(i));
+            assert!(alm.water_to_light.map(alm.fertilizer_to_water.map(alm.soil_to_fertilizer.map(alm.seed_to_soil.map(i)))) == alm.map_seed_to_light(i));
+            assert!(alm.seed_to_soil.unmap(alm.soil_to_fertilizer.unmap(alm.fertilizer_to_water.unmap(alm.water_to_light.unmap(i)))) == alm.map_light_to_seed(i));
+            assert!(alm.light_to_temperature.map(alm.water_to_light.map(alm.fertilizer_to_water.map(alm.soil_to_fertilizer.map(alm.seed_to_soil.map(i))))) == alm.map_seed_to_temperature(i));
+            assert!(alm.seed_to_soil.unmap(alm.soil_to_fertilizer.unmap(alm.fertilizer_to_water.unmap(alm.water_to_light.unmap(alm.light_to_temperature.unmap(i))))) == alm.map_temperature_to_seed(i));
+            assert!(alm.temperature_to_humidity.map(alm.light_to_temperature.map(alm.water_to_light.map(alm.fertilizer_to_water.map(alm.soil_to_fertilizer.map(alm.seed_to_soil.map(i)))))) == alm.map_seed_to_humidity(i));
+            assert!(alm.seed_to_soil.unmap(alm.soil_to_fertilizer.unmap(alm.fertilizer_to_water.unmap(alm.water_to_light.unmap(alm.light_to_temperature.unmap(alm.temperature_to_humidity.unmap(i)))))) == alm.map_humidity_to_seed(i));
+            assert!(alm.humidity_to_location.map(alm.temperature_to_humidity.map(alm.light_to_temperature.map(alm.water_to_light.map(alm.fertilizer_to_water.map(alm.soil_to_fertilizer.map(alm.seed_to_soil.map(i))))))) == alm.map_seed_to_location(i));
+            assert!(alm.seed_to_soil.unmap(alm.soil_to_fertilizer.unmap(alm.fertilizer_to_water.unmap(alm.water_to_light.unmap(alm.light_to_temperature.unmap(alm.temperature_to_humidity.unmap(alm.humidity_to_location.unmap(i))))))) == alm.map_location_to_seed(i));
         }
 
 
 
-        for seedPair in seedPairs {
+        for seed_pair in seed_pairs {
             println!(
                 "pair: {:?}, splits: {:?}",
-                seedPair,
-                alm.suggestSplits(seedPair)
+                seed_pair,
+                alm.suggest_splits(seed_pair)
             );
         }
         None
     }
 }
 
-fn parseMapping(block: &str) -> (&str, Map) {
+fn parse_mapping(block: &str) -> (&str, Map) {
     let (name, rest) = block.split_once(':').unwrap();
     let mappings = rest
         .trim()
@@ -108,175 +108,175 @@ fn parseMapping(block: &str) -> (&str, Map) {
 
 #[derive(Debug, Clone)]
 struct Almanac {
-    pub seedToSoil: Map,
-    pub soilToFertilizer: Map,
-    pub fertilizerToWater: Map,
-    pub waterToLight: Map,
-    pub lightToTemperature: Map,
-    pub temperatureToHumidity: Map,
-    pub humidityToLocation: Map,
+    pub seed_to_soil: Map,
+    pub soil_to_fertilizer: Map,
+    pub fertilizer_to_water: Map,
+    pub water_to_light: Map,
+    pub light_to_temperature: Map,
+    pub temperature_to_humidity: Map,
+    pub humidity_to_location: Map,
 }
 
 impl Almanac {
-    pub fn suggestSplits(&self, range: (usize, usize)) -> Vec<(usize, usize)> {
-        let soilSplits = self.seedToSoil.suggestSplits(range);
-        println!("soilSplits: {:?}", soilSplits);
-        let fertilizerSplits = soilSplits
+    pub fn suggest_splits(&self, range: (usize, usize)) -> Vec<(usize, usize)> {
+        let soil_splits = self.seed_to_soil.suggest_splits(range);
+        println!("soilSplits: {:?}", soil_splits);
+        let fertilizer_splits = soil_splits
             .iter()
             .flat_map(|split| {
-                self.soilToFertilizer
-                    .suggestSplits((
-                        self.mapSeedToFertilizer(split.0),
-                        self.mapSeedToFertilizer(split.1),
+                self.soil_to_fertilizer
+                    .suggest_splits((
+                        self.map_seed_to_fertilizer(split.0),
+                        self.map_seed_to_fertilizer(split.1),
                     ))
                     .iter()
                     .map(|split| {
                         (
-                            self.mapFertilizerToSeed(split.0),
-                            self.mapFertilizerToSeed(split.1),
+                            self.map_fertilizer_to_seed(split.0),
+                            self.map_fertilizer_to_seed(split.1),
                         )
                     })
                     .collect::<Vec<(usize, usize)>>()
             })
             .collect::<Vec<(usize, usize)>>();
-        println!("fertilizerSplits: {:?}", fertilizerSplits);
-        let waterSplits = fertilizerSplits
+        println!("fertilizerSplits: {:?}", fertilizer_splits);
+        let water_splits = fertilizer_splits
             .iter()
             .flat_map(|split| {
-                self.fertilizerToWater
-                    .suggestSplits((self.mapSeedToWater(split.0), self.mapSeedToWater(split.1)))
+                self.fertilizer_to_water
+                    .suggest_splits((self.map_seed_to_water(split.0), self.map_seed_to_water(split.1)))
                     .iter()
-                    .map(|split| (self.mapWaterToSeed(split.0), self.mapWaterToSeed(split.1)))
+                    .map(|split| (self.map_water_to_seed(split.0), self.map_water_to_seed(split.1)))
                     .collect::<Vec<(usize, usize)>>()
             })
             .collect::<Vec<(usize, usize)>>();
-        println!("waterSplits: {:?}", waterSplits);
-        let lightSplits = waterSplits
+        println!("waterSplits: {:?}", water_splits);
+        let light_splits = water_splits
             .iter()
             .flat_map(|split| {
-                self.waterToLight
-                    .suggestSplits((self.mapSeedToLight(split.0), self.mapSeedToLight(split.1)))
+                self.water_to_light
+                    .suggest_splits((self.map_seed_to_light(split.0), self.map_seed_to_light(split.1)))
                     .iter()
-                    .map(|split| (self.mapLightToSeed(split.0), self.mapLightToSeed(split.1)))
+                    .map(|split| (self.map_light_to_seed(split.0), self.map_light_to_seed(split.1)))
                     .collect::<Vec<(usize, usize)>>()
             })
             .collect::<Vec<(usize, usize)>>();
-        println!("lightSplits: {:?}", lightSplits);
-        let temperatureSplits = lightSplits
+        println!("lightSplits: {:?}", light_splits);
+        let temperature_splits = light_splits
             .iter()
             .flat_map(|split| {
-                self.lightToTemperature
-                    .suggestSplits((
-                        self.mapSeedToTemperature(split.0),
-                        self.mapSeedToTemperature(split.1),
+                self.light_to_temperature
+                    .suggest_splits((
+                        self.map_seed_to_temperature(split.0),
+                        self.map_seed_to_temperature(split.1),
                     ))
                     .iter()
                     .map(|split| {
                         (
-                            self.mapTemperatureToSeed(split.0),
-                            self.mapTemperatureToSeed(split.1),
+                            self.map_temperature_to_seed(split.0),
+                            self.map_temperature_to_seed(split.1),
                         )
                     })
                     .collect::<Vec<(usize, usize)>>()
             })
             .collect::<Vec<(usize, usize)>>();
-        println!("temperatureSplits: {:?}", temperatureSplits);
-        let humiditySplits = temperatureSplits
+        println!("temperatureSplits: {:?}", temperature_splits);
+        let humidity_splits = temperature_splits
             .iter()
             .flat_map(|split| {
-                self.temperatureToHumidity
-                    .suggestSplits((
-                        self.mapSeedToHumidity(split.0),
-                        self.mapSeedToHumidity(split.1),
+                self.temperature_to_humidity
+                    .suggest_splits((
+                        self.map_seed_to_humidity(split.0),
+                        self.map_seed_to_humidity(split.1),
                     ))
                     .iter()
                     .map(|split| {
                         (
-                            self.mapHumidityToSeed(split.0),
-                            self.mapHumidityToSeed(split.1),
+                            self.map_humidity_to_seed(split.0),
+                            self.map_humidity_to_seed(split.1),
                         )
                     })
                     .collect::<Vec<(usize, usize)>>()
             })
             .collect::<Vec<(usize, usize)>>();
-        println!("humiditySplits: {:?}", humiditySplits);
-        let locationSplits = humiditySplits
+        println!("humiditySplits: {:?}", humidity_splits);
+        let location_splits = humidity_splits
             .iter()
             .flat_map(|split| {
-                self.humidityToLocation
-                    .suggestSplits((
-                        self.mapSeedToLocation(split.0),
-                        self.mapSeedToLocation(split.1),
+                self.humidity_to_location
+                    .suggest_splits((
+                        self.map_seed_to_location(split.0),
+                        self.map_seed_to_location(split.1),
                     ))
                     .iter()
                     .map(|split| {
                         (
-                            self.mapLocationToSeed(split.0),
-                            self.mapLocationToSeed(split.1),
+                            self.map_location_to_seed(split.0),
+                            self.map_location_to_seed(split.1),
                         )
                     })
                     .collect::<Vec<(usize, usize)>>()
             })
             .collect::<Vec<(usize, usize)>>();
-        println!("locationSplits: {:?}", locationSplits);
-        locationSplits
+        println!("locationSplits: {:?}", location_splits);
+        location_splits
     }
 
-    pub fn mapSeedToSoil(&self, seed: usize) -> usize {
-        self.seedToSoil.map(seed)
+    pub fn map_seed_to_soil(&self, seed: usize) -> usize {
+        self.seed_to_soil.map(seed)
     }
 
-    pub fn mapSeedToFertilizer(&self, seed: usize) -> usize {
-        self.soilToFertilizer.map(self.mapSeedToSoil(seed))
+    pub fn map_seed_to_fertilizer(&self, seed: usize) -> usize {
+        self.soil_to_fertilizer.map(self.map_seed_to_soil(seed))
     }
 
-    pub fn mapSeedToWater(&self, seed: usize) -> usize {
-        self.fertilizerToWater.map(self.mapSeedToFertilizer(seed))
+    pub fn map_seed_to_water(&self, seed: usize) -> usize {
+        self.fertilizer_to_water.map(self.map_seed_to_fertilizer(seed))
     }
 
-    pub fn mapSeedToLight(&self, seed: usize) -> usize {
-        self.waterToLight.map(self.mapSeedToWater(seed))
+    pub fn map_seed_to_light(&self, seed: usize) -> usize {
+        self.water_to_light.map(self.map_seed_to_water(seed))
     }
 
-    pub fn mapSeedToTemperature(&self, seed: usize) -> usize {
-        self.lightToTemperature.map(self.mapSeedToLight(seed))
+    pub fn map_seed_to_temperature(&self, seed: usize) -> usize {
+        self.light_to_temperature.map(self.map_seed_to_light(seed))
     }
 
-    pub fn mapSeedToHumidity(&self, seed: usize) -> usize {
-        self.temperatureToHumidity
-            .map(self.mapSeedToTemperature(seed))
+    pub fn map_seed_to_humidity(&self, seed: usize) -> usize {
+        self.temperature_to_humidity
+            .map(self.map_seed_to_temperature(seed))
     }
 
-    pub fn mapSeedToLocation(&self, seed: usize) -> usize {
-        self.humidityToLocation.map(self.mapSeedToHumidity(seed))
+    pub fn map_seed_to_location(&self, seed: usize) -> usize {
+        self.humidity_to_location.map(self.map_seed_to_humidity(seed))
     }
 
-    pub fn mapLocationToSeed(&self, location: usize) -> usize {
-        self.mapHumidityToSeed(self.humidityToLocation.unmap(location))
+    pub fn map_location_to_seed(&self, location: usize) -> usize {
+        self.map_humidity_to_seed(self.humidity_to_location.unmap(location))
     }
 
-    pub fn mapHumidityToSeed(&self, humidity: usize) -> usize {
-        self.mapTemperatureToSeed(self.temperatureToHumidity.unmap(humidity))
+    pub fn map_humidity_to_seed(&self, humidity: usize) -> usize {
+        self.map_temperature_to_seed(self.temperature_to_humidity.unmap(humidity))
     }
 
-    pub fn mapTemperatureToSeed(&self, temperature: usize) -> usize {
-        self.mapLightToSeed(self.lightToTemperature.unmap(temperature))
+    pub fn map_temperature_to_seed(&self, temperature: usize) -> usize {
+        self.map_light_to_seed(self.light_to_temperature.unmap(temperature))
     }
 
-    pub fn mapLightToSeed(&self, light: usize) -> usize {
-        self.mapWaterToSeed(self.waterToLight.unmap(light))
+    pub fn map_light_to_seed(&self, light: usize) -> usize {
+        self.map_water_to_seed(self.water_to_light.unmap(light))
     }
 
-    pub fn mapWaterToSeed(&self, water: usize) -> usize {
-        self.mapFertilizerToSeed(self.fertilizerToWater.unmap(water))
+    pub fn map_water_to_seed(&self, water: usize) -> usize {
+        self.map_fertilizer_to_seed(self.fertilizer_to_water.unmap(water))
     }
 
-    pub fn mapFertilizerToSeed(&self, fertilizer: usize) -> usize {
-        self.mapSoilToSeed(self.soilToFertilizer.unmap(fertilizer))
+    pub fn map_fertilizer_to_seed(&self, fertilizer: usize) -> usize {
+        self.map_soil_to_seed(self.soil_to_fertilizer.unmap(fertilizer))
     }
 
-    pub fn mapSoilToSeed(&self, soil: usize) -> usize {
-        self.seedToSoil.unmap(soil)
+    pub fn map_soil_to_seed(&self, soil: usize) -> usize {
+        self.seed_to_soil.unmap(soil)
     }
 }
 
@@ -304,7 +304,7 @@ impl Map {
         index
     }
 
-    pub fn suggestSplits(&self, range: (usize, usize)) -> Vec<(usize, usize)> {
+    pub fn suggest_splits(&self, range: (usize, usize)) -> Vec<(usize, usize)> {
         let mut touching_mappings = self
             .mappings
             .iter()
@@ -365,7 +365,7 @@ impl Mapping {
         (self.source, self.source + self.length - 1)
     }
 
-    pub fn dest_range(&self) -> (usize, usize) {
+    pub fn _dest_range(&self) -> (usize, usize) {
         (self.dest, self.dest + self.length - 1)
     }
 

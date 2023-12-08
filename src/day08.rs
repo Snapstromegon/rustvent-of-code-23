@@ -43,9 +43,10 @@ impl Solution for Day {
         for start in starts.clone() {
             let mut loop_detector: HashMap<(String, Direction, usize), usize> = HashMap::new();
             let mut curr = start;
+            z_pos.insert(start, Vec::new());
             for i in 0..100_000 {
-                if curr.ends_with('Z') && !z_pos.contains_key(start) {
-                    z_pos.insert(start, i);
+                if curr.ends_with('Z') {
+                    z_pos.get_mut(start).unwrap().push(i);
                 }
                 let path_pos = i % path.len();
                 let dir = path[path_pos];
@@ -57,7 +58,7 @@ impl Solution for Day {
                         z_pos
                             .get(start)
                             .expect(&("Could not find z_pos for ".to_owned() + start))
-                            - loop_start,
+                            .clone(),
                         i - loop_start,
                     ));
                     break;
@@ -67,26 +68,10 @@ impl Solution for Day {
             }
         }
         println!("Loops: {loops:?}");
-        // let mut currs = starts.clone();
-        // let mut loop_detector = HashSet::new();
-        // for i in 0..100_000_000 {
-        //     for j in 0..currs.len() {
-        //         currs[j] = map.step(currs[j], path[i % path.len()]);
-        //     }
-        //     let state = currs.join(",");
-        //     if loop_detector.contains(&state) {
-        //         println!("Loop detected! {state}");
-        //         return None;
-        //     }
-        //     loop_detector.insert(state);
-        //     let z_count = currs.iter().filter(|s| s.ends_with('Z')).count();
-        //     if z_count > 0 {
-        //         println!("Of {} this number end with 'Z': {}", currs.len(), z_count);
-        //     }
-        //     if currs.iter().all(|s| s.ends_with('Z')) {
-        //         return Some(i + 1);
-        //     }
-        // }
+
+        // All loops only contain one Z element, which is also the same as the loop length.
+        // For this reason you just need to calculate the least common multiple of all these values
+        assert!(loops.iter().all(|looped| looped.2.len() == 1 && looped.2[0] == looped.3));
         None
     }
 }

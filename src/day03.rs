@@ -51,10 +51,10 @@ impl Plan {
                 .cloned()
                 .collect();
             for gear in touched_gears {
-                if connections.contains_key(&gear) {
-                    connections.get_mut(&gear).unwrap().push(part.clone());
+                if let std::collections::hash_map::Entry::Vacant(e) = connections.entry(gear) {
+                    e.insert(vec![part.clone()]);
                 } else {
-                    connections.insert(gear, vec![part.clone()]);
+                    connections.get_mut(&gear).unwrap().push(part.clone());
                 }
             }
         }

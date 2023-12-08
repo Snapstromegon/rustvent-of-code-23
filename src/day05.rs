@@ -11,7 +11,6 @@ impl Solution for Day {
             .split_once(':')
             .unwrap()
             .1
-            .trim()
             .split_whitespace()
             .map(|s| s.parse::<usize>().unwrap())
             .collect::<Vec<usize>>();
@@ -42,7 +41,6 @@ impl Solution for Day {
             .split_once(':')
             .unwrap()
             .1
-            .trim()
             .split_whitespace()
             .map(|s| s.parse::<usize>().unwrap())
             .collect::<Vec<usize>>()

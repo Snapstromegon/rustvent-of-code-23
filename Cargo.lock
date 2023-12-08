@@ -121,7 +121,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "rustvent-of-code-23"
+name = "rustvent"
 version = "0.1.0"
 dependencies = [
  "clap",

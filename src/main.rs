@@ -1,14 +1,15 @@
 use clap::Parser;
 
-mod day01;
-mod day02;
-mod day03;
-mod day04;
-mod day05;
-mod day06;
-mod day07;
-mod day08;
+pub mod day01;
+pub mod day02;
+pub mod day03;
+pub mod day04;
+pub mod day05;
+pub mod day06;
+pub mod day07;
+pub mod day08;
 mod solution;
+pub mod utils;
 use solution::Solution;
 
 #[derive(Parser, Debug)]
@@ -20,15 +21,6 @@ struct Args {
     /// Number of times to greet
     #[arg(short, long, default_value_t = false)]
     example: bool,
-}
-
-fn read_input(day: usize, example: bool) -> String {
-    let filename = format!(
-        "inputs/{:02}{}.txt",
-        day,
-        if example { "-example" } else { "" }
-    );
-    std::fs::read_to_string(filename).unwrap()
 }
 
 fn main() {
@@ -48,7 +40,7 @@ fn main() {
     };
     if let Some(solution) = solution {
         println!("Day {}:", day);
-        let input = read_input(day, example);
+        let input = utils::read_input(day, example, 1);
         let start = std::time::Instant::now();
         let result = solution.part1(&input);
         let duration = start.elapsed();
@@ -57,6 +49,7 @@ fn main() {
         } else {
             println!("Part 1: not implemented for day {day}");
         }
+        let input = utils::read_input(day, example, 2);
         let start = std::time::Instant::now();
         let result = solution.part2(&input);
         let duration = start.elapsed();

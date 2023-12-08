@@ -5,6 +5,8 @@ mod day02;
 mod day03;
 mod day04;
 mod day05;
+mod day06;
+mod day07;
 mod day08;
 mod solution;
 use solution::Solution;
@@ -39,6 +41,8 @@ fn main() {
         3 => Some(Box::new(day03::Day)),
         4 => Some(Box::new(day04::Day)),
         5 => Some(Box::new(day05::Day)),
+        6 => Some(Box::new(day06::Day)),
+        7 => Some(Box::new(day07::Day)),
         8 => Some(Box::new(day08::Day)),
         _ => None,
     };

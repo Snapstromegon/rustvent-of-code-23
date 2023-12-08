@@ -55,12 +55,10 @@ impl FromStr for Card {
         let (_, numbers) = s.split_once(':').unwrap();
         let (winning, actual) = numbers.split_once('|').unwrap();
         let winning = winning
-            .trim()
             .split_whitespace()
             .map(|s| s.parse::<usize>().unwrap())
             .collect::<Vec<usize>>();
         let actual = actual
-            .trim()
             .split_whitespace()
             .map(|s| s.parse::<usize>().unwrap())
             .collect::<Vec<usize>>();

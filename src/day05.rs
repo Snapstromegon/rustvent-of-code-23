@@ -15,7 +15,7 @@ impl Solution for Day {
             .split_whitespace()
             .map(|s| s.parse::<usize>().unwrap())
             .collect::<Vec<usize>>();
-        let mappings: Vec<(&str, Map)> = blocks.map(|block| parse_mapping(block)).collect();
+        let mappings: Vec<(&str, Map)> = blocks.map(parse_mapping).collect();
         let alm = Almanac {
             seed_to_soil: mappings[0].1.clone(),
             soil_to_fertilizer: mappings[1].1.clone(),
@@ -49,7 +49,7 @@ impl Solution for Day {
             .chunks_exact(2)
             .map(|chunk| (chunk[0], chunk[0] + chunk[1] - 1))
             .collect::<Vec<(usize, usize)>>();
-        let mappings: Vec<(&str, Map)> = blocks.map(|block| parse_mapping(block)).collect();
+        let mappings: Vec<(&str, Map)> = blocks.map(parse_mapping).collect();
         let alm = Almanac {
             seed_to_soil: mappings[0].1.clone(),
             soil_to_fertilizer: mappings[1].1.clone(),
@@ -62,21 +62,102 @@ impl Solution for Day {
         for i in 0..100 {
             assert!(alm.seed_to_soil.map(i) == alm.map_seed_to_soil(i));
             assert!(alm.seed_to_soil.unmap(i) == alm.map_soil_to_seed(i));
-            assert!(alm.soil_to_fertilizer.map(alm.seed_to_soil.map(i)) == alm.map_seed_to_fertilizer(i));
-            assert!(alm.seed_to_soil.unmap(alm.soil_to_fertilizer.unmap(i)) == alm.map_fertilizer_to_seed(i));
-            assert!(alm.fertilizer_to_water.map(alm.soil_to_fertilizer.map(alm.seed_to_soil.map(i))) == alm.map_seed_to_water(i));
-            assert!(alm.seed_to_soil.unmap(alm.soil_to_fertilizer.unmap(alm.fertilizer_to_water.unmap(i))) == alm.map_water_to_seed(i));
-            assert!(alm.water_to_light.map(alm.fertilizer_to_water.map(alm.soil_to_fertilizer.map(alm.seed_to_soil.map(i)))) == alm.map_seed_to_light(i));
-            assert!(alm.seed_to_soil.unmap(alm.soil_to_fertilizer.unmap(alm.fertilizer_to_water.unmap(alm.water_to_light.unmap(i)))) == alm.map_light_to_seed(i));
-            assert!(alm.light_to_temperature.map(alm.water_to_light.map(alm.fertilizer_to_water.map(alm.soil_to_fertilizer.map(alm.seed_to_soil.map(i))))) == alm.map_seed_to_temperature(i));
-            assert!(alm.seed_to_soil.unmap(alm.soil_to_fertilizer.unmap(alm.fertilizer_to_water.unmap(alm.water_to_light.unmap(alm.light_to_temperature.unmap(i))))) == alm.map_temperature_to_seed(i));
-            assert!(alm.temperature_to_humidity.map(alm.light_to_temperature.map(alm.water_to_light.map(alm.fertilizer_to_water.map(alm.soil_to_fertilizer.map(alm.seed_to_soil.map(i)))))) == alm.map_seed_to_humidity(i));
-            assert!(alm.seed_to_soil.unmap(alm.soil_to_fertilizer.unmap(alm.fertilizer_to_water.unmap(alm.water_to_light.unmap(alm.light_to_temperature.unmap(alm.temperature_to_humidity.unmap(i)))))) == alm.map_humidity_to_seed(i));
-            assert!(alm.humidity_to_location.map(alm.temperature_to_humidity.map(alm.light_to_temperature.map(alm.water_to_light.map(alm.fertilizer_to_water.map(alm.soil_to_fertilizer.map(alm.seed_to_soil.map(i))))))) == alm.map_seed_to_location(i));
-            assert!(alm.seed_to_soil.unmap(alm.soil_to_fertilizer.unmap(alm.fertilizer_to_water.unmap(alm.water_to_light.unmap(alm.light_to_temperature.unmap(alm.temperature_to_humidity.unmap(alm.humidity_to_location.unmap(i))))))) == alm.map_location_to_seed(i));
+            assert!(
+                alm.soil_to_fertilizer.map(alm.seed_to_soil.map(i))
+                    == alm.map_seed_to_fertilizer(i)
+            );
+            assert!(
+                alm.seed_to_soil.unmap(alm.soil_to_fertilizer.unmap(i))
+                    == alm.map_fertilizer_to_seed(i)
+            );
+            assert!(
+                alm.fertilizer_to_water
+                    .map(alm.soil_to_fertilizer.map(alm.seed_to_soil.map(i)))
+                    == alm.map_seed_to_water(i)
+            );
+            assert!(
+                alm.seed_to_soil.unmap(
+                    alm.soil_to_fertilizer
+                        .unmap(alm.fertilizer_to_water.unmap(i))
+                ) == alm.map_water_to_seed(i)
+            );
+            assert!(
+                alm.water_to_light.map(
+                    alm.fertilizer_to_water
+                        .map(alm.soil_to_fertilizer.map(alm.seed_to_soil.map(i)))
+                ) == alm.map_seed_to_light(i)
+            );
+            assert!(
+                alm.seed_to_soil.unmap(
+                    alm.soil_to_fertilizer
+                        .unmap(alm.fertilizer_to_water.unmap(alm.water_to_light.unmap(i)))
+                ) == alm.map_light_to_seed(i)
+            );
+            assert!(
+                alm.light_to_temperature.map(
+                    alm.water_to_light.map(
+                        alm.fertilizer_to_water
+                            .map(alm.soil_to_fertilizer.map(alm.seed_to_soil.map(i)))
+                    )
+                ) == alm.map_seed_to_temperature(i)
+            );
+            assert!(
+                alm.seed_to_soil.unmap(
+                    alm.soil_to_fertilizer.unmap(
+                        alm.fertilizer_to_water
+                            .unmap(alm.water_to_light.unmap(alm.light_to_temperature.unmap(i)))
+                    )
+                ) == alm.map_temperature_to_seed(i)
+            );
+            assert!(
+                alm.temperature_to_humidity.map(
+                    alm.light_to_temperature.map(
+                        alm.water_to_light.map(
+                            alm.fertilizer_to_water
+                                .map(alm.soil_to_fertilizer.map(alm.seed_to_soil.map(i)))
+                        )
+                    )
+                ) == alm.map_seed_to_humidity(i)
+            );
+            assert!(
+                alm.seed_to_soil.unmap(
+                    alm.soil_to_fertilizer.unmap(
+                        alm.fertilizer_to_water.unmap(
+                            alm.water_to_light.unmap(
+                                alm.light_to_temperature
+                                    .unmap(alm.temperature_to_humidity.unmap(i))
+                            )
+                        )
+                    )
+                ) == alm.map_humidity_to_seed(i)
+            );
+            assert!(
+                alm.humidity_to_location.map(
+                    alm.temperature_to_humidity.map(
+                        alm.light_to_temperature.map(
+                            alm.water_to_light.map(
+                                alm.fertilizer_to_water
+                                    .map(alm.soil_to_fertilizer.map(alm.seed_to_soil.map(i)))
+                            )
+                        )
+                    )
+                ) == alm.map_seed_to_location(i)
+            );
+            assert!(
+                alm.seed_to_soil.unmap(
+                    alm.soil_to_fertilizer.unmap(
+                        alm.fertilizer_to_water.unmap(
+                            alm.water_to_light.unmap(
+                                alm.light_to_temperature.unmap(
+                                    alm.temperature_to_humidity
+                                        .unmap(alm.humidity_to_location.unmap(i))
+                                )
+                            )
+                        )
+                    )
+                ) == alm.map_location_to_seed(i)
+            );
         }
-
-
 
         for seed_pair in seed_pairs {
             println!(
@@ -144,9 +225,17 @@ impl Almanac {
             .iter()
             .flat_map(|split| {
                 self.fertilizer_to_water
-                    .suggest_splits((self.map_seed_to_water(split.0), self.map_seed_to_water(split.1)))
+                    .suggest_splits((
+                        self.map_seed_to_water(split.0),
+                        self.map_seed_to_water(split.1),
+                    ))
                     .iter()
-                    .map(|split| (self.map_water_to_seed(split.0), self.map_water_to_seed(split.1)))
+                    .map(|split| {
+                        (
+                            self.map_water_to_seed(split.0),
+                            self.map_water_to_seed(split.1),
+                        )
+                    })
                     .collect::<Vec<(usize, usize)>>()
             })
             .collect::<Vec<(usize, usize)>>();
@@ -155,9 +244,17 @@ impl Almanac {
             .iter()
             .flat_map(|split| {
                 self.water_to_light
-                    .suggest_splits((self.map_seed_to_light(split.0), self.map_seed_to_light(split.1)))
+                    .suggest_splits((
+                        self.map_seed_to_light(split.0),
+                        self.map_seed_to_light(split.1),
+                    ))
                     .iter()
-                    .map(|split| (self.map_light_to_seed(split.0), self.map_light_to_seed(split.1)))
+                    .map(|split| {
+                        (
+                            self.map_light_to_seed(split.0),
+                            self.map_light_to_seed(split.1),
+                        )
+                    })
                     .collect::<Vec<(usize, usize)>>()
             })
             .collect::<Vec<(usize, usize)>>();
@@ -231,7 +328,8 @@ impl Almanac {
     }
 
     pub fn map_seed_to_water(&self, seed: usize) -> usize {
-        self.fertilizer_to_water.map(self.map_seed_to_fertilizer(seed))
+        self.fertilizer_to_water
+            .map(self.map_seed_to_fertilizer(seed))
     }
 
     pub fn map_seed_to_light(&self, seed: usize) -> usize {
@@ -248,7 +346,8 @@ impl Almanac {
     }
 
     pub fn map_seed_to_location(&self, seed: usize) -> usize {
-        self.humidity_to_location.map(self.map_seed_to_humidity(seed))
+        self.humidity_to_location
+            .map(self.map_seed_to_humidity(seed))
     }
 
     pub fn map_location_to_seed(&self, location: usize) -> usize {
@@ -310,7 +409,7 @@ impl Map {
             .iter()
             .filter(|m| m.touches_range(range))
             .collect::<Vec<&Mapping>>();
-        if touching_mappings.len() == 0 {
+        if touching_mappings.is_empty() {
             return vec![range];
         }
         touching_mappings.sort_by(|a, b| a.source.cmp(&b.source));

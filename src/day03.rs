@@ -102,14 +102,14 @@ impl FromStr for Plan {
                     if c.is_numeric() {
                         number = number * 10 + c.to_digit(10).unwrap() as usize;
                         if start == usize::MAX {
-                            start = col as usize;
+                            start = col;
                         }
                     } else if start != usize::MAX {
                         numbers.push(Part {
-                            id: number as usize,
+                            id: number,
                             row,
-                            col: start as usize,
-                            length: col - start as usize,
+                            col: start,
+                            length: col - start,
                         });
                         number = 0;
                         start = usize::MAX;
@@ -117,10 +117,10 @@ impl FromStr for Plan {
                 }
                 if start != usize::MAX {
                     numbers.push(Part {
-                        id: number as usize,
+                        id: number,
                         row,
-                        col: start as usize,
-                        length: line.len() - start as usize,
+                        col: start,
+                        length: line.len() - start,
                     });
                 }
                 numbers

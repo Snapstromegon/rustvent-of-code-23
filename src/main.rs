@@ -8,6 +8,7 @@ pub mod day05;
 pub mod day06;
 pub mod day07;
 pub mod day08;
+pub mod day09;
 mod solution;
 pub mod utils;
 use solution::Solution;
@@ -36,27 +37,34 @@ fn main() {
         6 => Some(Box::new(day06::Day)),
         7 => Some(Box::new(day07::Day)),
         8 => Some(Box::new(day08::Day)),
+        9 => Some(Box::new(day09::Day)),
         _ => None,
     };
     if let Some(solution) = solution {
         println!("Day {}:", day);
-        let input = utils::read_input(day, example, 1);
-        let start = std::time::Instant::now();
-        let result = solution.part1(&input);
-        let duration = start.elapsed();
-        if let Some(result) = result {
-            println!("Part 1: {} (took {:?})", result, duration);
+        if let Some(input) = utils::read_input(day, example, 1) {
+            let start = std::time::Instant::now();
+            let result = solution.part1(&input);
+            let duration = start.elapsed();
+            if let Some(result) = result {
+                println!("Part 1: {} (took {:?})", result, duration);
+            } else {
+                println!("Part 1: not implemented for day {day}");
+            }
         } else {
-            println!("Part 1: not implemented for day {day}");
+            println!("Part 1: no input found for day {day} (example: {example})");
         }
-        let input = utils::read_input(day, example, 2);
-        let start = std::time::Instant::now();
-        let result = solution.part2(&input);
-        let duration = start.elapsed();
-        if let Some(result) = result {
-            println!("Part 2: {} (took {:?})", result, duration);
+        if let Some(input) = utils::read_input(day, example, 2) {
+            let start = std::time::Instant::now();
+            let result = solution.part2(&input);
+            let duration = start.elapsed();
+            if let Some(result) = result {
+                println!("Part 2: {} (took {:?})", result, duration);
+            } else {
+                println!("Part 2: not implemented for day {day}");
+            }
         } else {
-            println!("Part 2: not implemented for day {day}");
+            println!("Part 2: no input found for day {day} (example: {example})");
         }
     } else {
         println!("Day {} not implemented", day);

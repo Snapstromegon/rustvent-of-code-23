@@ -6,7 +6,7 @@ pub struct Day;
 
 impl Solution for Day {
     fn part1(&self, input: &str) -> Option<usize> {
-        let (path, rest) = input.split_once("\n\n").unwrap();
+        let (path, rest) = input.split_once("\r\n\r\n").unwrap();
         let map: Map = rest.parse().unwrap();
         let path: Vec<Direction> = path.chars().map(|c| c.into()).collect();
         if map.mapping.contains_key("AAA") {
@@ -24,7 +24,7 @@ impl Solution for Day {
     }
 
     fn part2(&self, input: &str) -> Option<usize> {
-        let (path, rest) = input.split_once("\n\n").unwrap();
+        let (path, rest) = input.split_once("\r\n\r\n").unwrap();
         let map: Map = rest.parse().unwrap();
         let path: Vec<Direction> = path.chars().map(|c| c.into()).collect();
         let starts: Vec<&str> = map

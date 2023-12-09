@@ -1,4 +1,4 @@
-pub fn read_input(day: usize, example: bool, part: u8) -> String {
+pub fn read_input(day: usize, example: bool, part: u8) -> Option<String> {
     let filename = format!(
         "inputs/{:02}{}.txt",
         day,
@@ -8,5 +8,5 @@ pub fn read_input(day: usize, example: bool, part: u8) -> String {
             "".to_string()
         }
     );
-    std::fs::read_to_string(filename).unwrap()
+    std::fs::read_to_string(filename).ok()
 }

@@ -19,8 +19,7 @@ fn part2_example() {
   assert_eq!(Day.part2(&input), Some(2));
 }
 #[test]
-#[ignore]
 fn part2_challenge() {
     let input = read_input(9, false, 2).unwrap();
-    assert_eq!(Day.part2(&input), Some(10371555451871));
+    assert_eq!(Day.part2(&input), Some(803));
 }

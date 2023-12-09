@@ -4,7 +4,7 @@ pub struct Day;
 
 impl Solution for Day {
     fn part1(&self, input: &str) -> Option<usize> {
-        let mut blocks = input.split("\r\n\r\n");
+        let mut blocks = input.split("\r\n\r\n").map(|s| s.split("\n\n")).flatten();
         let seeds = blocks
             .next()
             .unwrap()
@@ -34,7 +34,7 @@ impl Solution for Day {
     }
 
     fn part2(&self, input: &str) -> Option<usize> {
-        let mut blocks = input.split("\r\n\r\n");
+        let mut blocks = input.split("\r\n\r\n").map(|s| s.split("\n\n")).flatten();
         let seed_pairs = blocks
             .next()
             .unwrap()
@@ -172,7 +172,7 @@ fn parse_mapping(block: &str) -> (&str, Map) {
     let (name, rest) = block.split_once(':').unwrap();
     let mappings = rest
         .trim()
-        .split("\r\n")
+        .lines()
         .map(|line| {
             let mut entries = line.split_whitespace().map(|s| s.parse::<usize>().unwrap());
             Mapping {

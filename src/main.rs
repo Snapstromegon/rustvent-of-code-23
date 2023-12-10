@@ -9,6 +9,7 @@ pub mod day06;
 pub mod day07;
 pub mod day08;
 pub mod day09;
+pub mod day10;
 mod solution;
 pub mod utils;
 use solution::Solution;
@@ -38,6 +39,7 @@ fn main() {
         7 => Some(Box::new(day07::Day)),
         8 => Some(Box::new(day08::Day)),
         9 => Some(Box::new(day09::Day)),
+        10 => Some(Box::new(day10::Day)),
         _ => None,
     };
     if let Some(solution) = solution {

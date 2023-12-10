@@ -1,4 +1,4 @@
-use std::{str::FromStr, fmt::Display};
+use std::{fmt::Display, str::FromStr};
 
 use crate::solution::Solution;
 
@@ -14,8 +14,15 @@ impl Solution for Day {
     fn part2(&self, input: &str) -> Option<usize> {
         let map: Map = input.parse().unwrap();
         let extract = map.extract_loop();
-        println!("Extracted loop: \n{}", extract);
-        None
+        let mut enlarged = extract.enlarge();
+        enlarged.remove_outside();
+        let shrunk = enlarged.shrink();
+        let empties = shrunk
+            .map
+            .iter()
+            .map(|row| row.iter().filter(|pipe| **pipe == Pipe::Empty).count())
+            .sum::<usize>();
+        Some(empties)
     }
 }
 
@@ -83,6 +90,113 @@ impl Map {
             dir = self.map[current.0][current.1].other_dir(dir);
         }
         extract
+    }
+
+    pub fn enlarge(&self) -> Self {
+        let mut enlarged = Map {
+            map: vec![vec![Pipe::Empty; self.map[0].len() * 2]; self.map.len() * 2],
+            start: (self.start.0 * 2, self.start.1 * 2),
+        };
+
+        for row in 0..self.map.len() {
+            for col in 0..self.map[0].len() {
+                let pipe = self.map[row][col];
+                let row = row * 2;
+                let col = col * 2;
+                enlarged.map[row][col] = pipe;
+                match pipe {
+                    Pipe::CornerBottomLeft => {
+                        enlarged.map[row + 1][col] = Pipe::Vertical;
+                    }
+                    Pipe::CornerBottomRight => {
+                        enlarged.map[row + 1][col] = Pipe::Vertical;
+                        enlarged.map[row][col + 1] = Pipe::Horizontal;
+                    }
+                    Pipe::CornerTopLeft => {}
+                    Pipe::CornerTopRight => {
+                        enlarged.map[row][col + 1] = Pipe::Horizontal;
+                    }
+                    Pipe::Horizontal => {
+                        enlarged.map[row][col + 1] = Pipe::Horizontal;
+                    }
+                    Pipe::Vertical => {
+                        enlarged.map[row + 1][col] = Pipe::Vertical;
+                    }
+                    Pipe::Start => {
+                        if self.map[(row/2) + 1][col/ 2] == Pipe::Vertical || self.map[(row/2) + 1][col/ 2] == Pipe::CornerBottomLeft || self.map[(row/2) + 1][col/ 2] == Pipe::CornerBottomRight {
+                            enlarged.map[row + 1][col] = Pipe::Vertical;
+                        }
+                        if self.map[row/2][(col/ 2) + 1] == Pipe::Horizontal || self.map[row/2][(col/ 2) + 1] == Pipe::CornerBottomLeft || self.map[row/2][(col/ 2) + 1] == Pipe::CornerTopLeft {
+                            enlarged.map[row][col+1] = Pipe::Horizontal;
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
+
+        enlarged
+    }
+
+    pub fn shrink(&self) -> Self {
+        let mut shrunk = Map {
+            map: vec![vec![Pipe::Empty; self.map[0].len() / 2]; self.map.len() / 2],
+            start: (self.start.0 / 2, self.start.1 / 2),
+        };
+
+        for row in 0..self.map.len() / 2 {
+            for col in 0..self.map[0].len() / 2 {
+                let pipe = self.map[row * 2][col * 2];
+                shrunk.map[row][col] = pipe;
+            }
+        }
+
+        shrunk
+    }
+
+    pub fn remove_outside(&mut self) {
+        let mut pending = vec![];
+        for row in 0..self.map.len() {
+            if self.map[row][0] == Pipe::Empty {
+                pending.push((row, 0));
+            }
+            if self.map[row][self.map[0].len() - 1] == Pipe::Empty {
+                pending.push((row, self.map[0].len() - 1));
+            }
+        }
+        for col in 0..self.map[0].len() {
+            if self.map[0][col] == Pipe::Empty {
+                pending.push((0, col));
+            }
+            if self.map[self.map.len() - 1][col] == Pipe::Empty {
+                pending.push((self.map.len() - 1, col));
+            }
+        }
+
+        while !pending.is_empty() {
+            let (row, col) = pending.pop().unwrap();
+            let pipe = self.map[row][col];
+            // println!("Checking {:?} {:?}", (row, col), pipe);
+            if pipe == Pipe::Outside {
+                continue;
+            }
+            self.map[row][col] = Pipe::Outside;
+            for dir in [
+                Direction::Up,
+                Direction::Down,
+                Direction::Left,
+                Direction::Right,
+            ]
+            .iter()
+            .filter(|dir| self.pos_dir_possible((row, col), **dir))
+            {
+                let pos = self.pos_in_dir((row, col), *dir);
+                let next_pipe = self.map[pos.0][pos.1];
+                if next_pipe == Pipe::Empty {
+                    pending.push(pos);
+                }
+            }
+        }
     }
 
     pub fn pos_in_dir(&self, pos: (usize, usize), dir: Direction) -> (usize, usize) {
@@ -177,6 +291,7 @@ enum Pipe {
     CornerTopLeft,
     CornerBottomRight,
     CornerBottomLeft,
+    Outside,
 }
 
 impl Pipe {
@@ -226,6 +341,7 @@ impl Display for Pipe {
             Pipe::CornerTopLeft => 'J',
             Pipe::CornerBottomRight => 'F',
             Pipe::CornerBottomLeft => '7',
+            Pipe::Outside => ' ',
         };
         write!(f, "{}", c)
     }

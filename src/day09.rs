@@ -28,7 +28,7 @@ impl PredictionTree {
     fn new(nodes: Vec<i64>) -> Self {
         if nodes.len() < 2 {
             return Self {
-                nodes: nodes,
+                nodes,
                 child: None,
             };
         }
@@ -40,7 +40,7 @@ impl PredictionTree {
             last = node;
         }
         Self {
-            nodes: nodes,
+            nodes,
             child: if child_nodes.iter().all(|x| *x == 0) {
                 None
             } else {
@@ -59,7 +59,7 @@ impl PredictionTree {
 
     pub fn get_postdiction(&self) -> i64 {
         if let Some(child) = &self.child {
-          self.nodes.iter().next().unwrap() - child.get_postdiction()
+          self.nodes.first().unwrap() - child.get_postdiction()
         } else {
             self.nodes[0]
         }

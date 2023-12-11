@@ -43,7 +43,7 @@ struct Map {
 impl Map {
     pub fn loop_length(&self) -> usize {
         let mut current = self.start;
-        let mut dir: Direction = [
+        let mut dir: Direction = *[
             Direction::Up,
             Direction::Down,
             Direction::Left,
@@ -51,8 +51,7 @@ impl Map {
         ]
         .iter()
         .find(|dir| self.can_move(current, **dir))
-        .unwrap()
-        .clone();
+        .unwrap();
         let mut length = 0;
         loop {
             length += 1;
@@ -62,12 +61,12 @@ impl Map {
             }
             dir = self.map[current.0][current.1].other_dir(dir);
         }
-        return length;
+        length
     }
 
     pub fn extract_loop(&self) -> Self {
         let mut current = self.start;
-        let mut dir: Direction = [
+        let mut dir: Direction = *[
             Direction::Up,
             Direction::Down,
             Direction::Left,
@@ -75,8 +74,7 @@ impl Map {
         ]
         .iter()
         .find(|dir| self.can_move(current, **dir))
-        .unwrap()
-        .clone();
+        .unwrap();
         let mut extract = Map {
             map: vec![vec![Pipe::Empty; self.map[0].len()]; self.map.len()],
             start: self.start,
@@ -123,11 +121,17 @@ impl Map {
                         enlarged.map[row + 1][col] = Pipe::Vertical;
                     }
                     Pipe::Start => {
-                        if self.map[(row/2) + 1][col/ 2] == Pipe::Vertical || self.map[(row/2) + 1][col/ 2] == Pipe::CornerBottomLeft || self.map[(row/2) + 1][col/ 2] == Pipe::CornerBottomRight {
+                        if self.map[(row / 2) + 1][col / 2] == Pipe::Vertical
+                            || self.map[(row / 2) + 1][col / 2] == Pipe::CornerBottomLeft
+                            || self.map[(row / 2) + 1][col / 2] == Pipe::CornerBottomRight
+                        {
                             enlarged.map[row + 1][col] = Pipe::Vertical;
                         }
-                        if self.map[row/2][(col/ 2) + 1] == Pipe::Horizontal || self.map[row/2][(col/ 2) + 1] == Pipe::CornerBottomLeft || self.map[row/2][(col/ 2) + 1] == Pipe::CornerTopLeft {
-                            enlarged.map[row][col+1] = Pipe::Horizontal;
+                        if self.map[row / 2][(col / 2) + 1] == Pipe::Horizontal
+                            || self.map[row / 2][(col / 2) + 1] == Pipe::CornerBottomLeft
+                            || self.map[row / 2][(col / 2) + 1] == Pipe::CornerTopLeft
+                        {
+                            enlarged.map[row][col + 1] = Pipe::Horizontal;
                         }
                     }
                     _ => {}
@@ -173,8 +177,7 @@ impl Map {
             }
         }
 
-        while !pending.is_empty() {
-            let (row, col) = pending.pop().unwrap();
+        while let Some((row, col)) = pending.pop() {
             let pipe = self.map[row][col];
             // println!("Checking {:?} {:?}", (row, col), pipe);
             if pipe == Pipe::Outside {
@@ -222,25 +225,25 @@ impl Map {
             return false;
         }
         let next = self.pos_in_dir(pos, dir);
-        let next_pipe = self.map[next.0][next.1].clone();
+        let next_pipe = self.map[next.0][next.1];
         // println!("Can move {:?} from {:?} to {:?} ({:?})", dir, pos, next, next_pipe);
         match next_pipe {
             Pipe::Empty => false,
-            _ => match (dir, next_pipe) {
-                (Direction::Up, Pipe::CornerBottomLeft) => true,
-                (Direction::Up, Pipe::CornerBottomRight) => true,
-                (Direction::Down, Pipe::CornerTopLeft) => true,
-                (Direction::Down, Pipe::CornerTopRight) => true,
-                (Direction::Left, Pipe::CornerTopRight) => true,
-                (Direction::Left, Pipe::CornerBottomRight) => true,
-                (Direction::Right, Pipe::CornerTopLeft) => true,
-                (Direction::Right, Pipe::CornerBottomLeft) => true,
-                (Direction::Up, Pipe::Vertical) => true,
-                (Direction::Down, Pipe::Vertical) => true,
-                (Direction::Left, Pipe::Horizontal) => true,
-                (Direction::Right, Pipe::Horizontal) => true,
-                _ => false,
-            },
+            _ => matches!(
+                (dir, next_pipe),
+                (Direction::Up, Pipe::CornerBottomLeft)
+                    | (Direction::Up, Pipe::CornerBottomRight)
+                    | (Direction::Down, Pipe::CornerTopLeft)
+                    | (Direction::Down, Pipe::CornerTopRight)
+                    | (Direction::Left, Pipe::CornerTopRight)
+                    | (Direction::Left, Pipe::CornerBottomRight)
+                    | (Direction::Right, Pipe::CornerTopLeft)
+                    | (Direction::Right, Pipe::CornerBottomLeft)
+                    | (Direction::Up, Pipe::Vertical)
+                    | (Direction::Down, Pipe::Vertical)
+                    | (Direction::Left, Pipe::Horizontal)
+                    | (Direction::Right, Pipe::Horizontal)
+            ),
         }
     }
 }
@@ -275,7 +278,7 @@ impl Display for Map {
             for pipe in row {
                 write!(f, "{}", pipe)?;
             }
-            write!(f, "\n")?;
+            writeln!(f)?;
         }
         Ok(())
     }

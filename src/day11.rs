@@ -1,4 +1,4 @@
-use std::{collections::HashSet, str::FromStr};
+use std::{collections::HashSet};
 
 use crate::solution::Solution;
 
@@ -18,8 +18,6 @@ impl Solution for Day {
 
 #[derive(Debug)]
 struct Sky {
-    empty_rows: HashSet<usize>,
-    empty_cols: HashSet<usize>,
     galaxies: Vec<(usize, usize)>,
 }
 
@@ -59,15 +57,14 @@ impl Sky {
 
         let mut galaxies = Vec::new();
         let mut expanded_row = 0;
-        for row in 0..sky.len() {
+        for (row, line) in sky.iter().enumerate() {
             if empty_rows.contains(&row) {
-                expanded_row += expansion-1;
+                expanded_row += expansion - 1;
             }
-            let line = &sky[row];
             let mut expanded_col = 0;
-            for col in 0..line.len() {
+            for (col, _) in line.iter().enumerate() {
                 if empty_cols.contains(&col) {
-                    expanded_col += expansion-1;
+                    expanded_col += expansion - 1;
                 }
                 if line[col] == '#' {
                     galaxies.push((expanded_row, expanded_col));
@@ -77,10 +74,6 @@ impl Sky {
             expanded_row += 1;
         }
 
-        Self {
-            empty_rows,
-            empty_cols,
-            galaxies,
-        }
+        Self { galaxies }
     }
 }

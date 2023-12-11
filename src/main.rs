@@ -1,16 +1,6 @@
 use clap::Parser;
 
-pub mod day01;
-pub mod day02;
-pub mod day03;
-pub mod day04;
-pub mod day05;
-pub mod day06;
-pub mod day07;
-pub mod day08;
-pub mod day09;
-pub mod day10;
-mod solution;
+use rustvent::*;
 pub mod utils;
 use solution::Solution;
 
@@ -40,6 +30,7 @@ fn main() {
         8 => Some(Box::new(day08::Day)),
         9 => Some(Box::new(day09::Day)),
         10 => Some(Box::new(day10::Day)),
+        11 => Some(Box::new(day11::Day)),
         _ => None,
     };
     if let Some(solution) = solution {

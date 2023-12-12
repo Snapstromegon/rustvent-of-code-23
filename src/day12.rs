@@ -19,7 +19,9 @@ impl Solution for Day {
                 .iter()
                 .map(|s| {
                     println!("Processing {s}");
-                    s.count_possibles()
+                    let count = s.count_possibles();
+                    println!("{count}");
+                    count
                 })
                 .sum(),
         )
@@ -38,6 +40,7 @@ impl SpringSet {
         let mut broken_chains = vec![];
         for _i in 0..5 {
             statuses.extend(self.statuses.iter().cloned());
+            statuses.push(SpringStatus::Unknown);
             broken_chains.extend(self.broken_chains.iter().cloned());
         }
         Self {
@@ -53,6 +56,44 @@ impl SpringSet {
             .count()
     }
 
+    pub fn number_of_possible_brokens(&self) -> usize {
+        self.statuses
+            .iter()
+            .filter(|status| **status == SpringStatus::Unknown || **status == SpringStatus::Broken)
+            .count()
+    }
+
+    pub fn number_of_possible_oks(&self) -> usize {
+        self.statuses
+            .iter()
+            .filter(|status| **status == SpringStatus::Unknown || **status == SpringStatus::Ok)
+            .count()
+    }
+
+    pub fn counts_per_type(&self) -> (usize, usize, usize) {
+        let mut res = (0, 0, 0);
+        for status in &self.statuses {
+            match status {
+                SpringStatus::Ok => res.0 += 1,
+                SpringStatus::Broken => res.1 += 1,
+                SpringStatus::Unknown => res.2 += 1,
+            }
+        }
+        res
+    }
+
+    pub fn total_brokens(&self) -> usize {
+        self.broken_chains.iter().sum()
+    }
+
+    pub fn min_ok(&self) -> usize {
+        if self.broken_chains.is_empty() {
+            0
+        } else {
+            self.broken_chains.len() - 1
+        }
+    }
+
     pub fn count_possibles(&self) -> usize {
         if self.number_of_unknowns() == 0 {
             if self.is_valid() {
@@ -62,6 +103,15 @@ impl SpringSet {
                 // println!("Counting for BROKEN {:?}", self);
                 0
             }
+        } else if self.number_of_possible_brokens() < self.total_brokens() || self.min_ok() > self.number_of_possible_oks() {
+            // println!(
+            //     "abort {self} - possible: {}, brokens: {}, min_ok: {}, possible_ok: {}",
+            //     self.number_of_possible_brokens(),
+            //     self.total_brokens(),
+            //     self.min_ok(),
+            //     self.number_of_possible_oks()
+            // );
+            0
         } else {
             let first_unknown_index = self
                 .statuses
@@ -71,12 +121,60 @@ impl SpringSet {
                 .map(|(i, _)| i)
                 .next()
                 .unwrap();
-            let mut clone_ok = self.clone();
-            clone_ok.statuses[first_unknown_index] = SpringStatus::Ok;
-            let mut clone_broken = self.clone();
-            clone_broken.statuses[first_unknown_index] = SpringStatus::Broken;
-            clone_ok.count_possibles() + clone_broken.count_possibles()
+            let valid_until = self.is_valid_until(first_unknown_index);
+            // println!("is valid until {self} - {first_unknown_index} - {valid_until}");
+            if valid_until {
+                let mut clone_ok = self.clone();
+                clone_ok.statuses[first_unknown_index] = SpringStatus::Ok;
+                let mut clone_broken = self.clone();
+                clone_broken.statuses[first_unknown_index] = SpringStatus::Broken;
+                clone_ok.count_possibles() + clone_broken.count_possibles()
+            } else {
+                0
+            }
         }
+    }
+
+    pub fn is_valid_until(&self, index: usize) -> bool {
+        if index == 0 {
+            return true;
+        }
+        if self
+            .statuses
+            .iter()
+            .take(index - 1)
+            .any(|s| *s == SpringStatus::Unknown)
+        {
+            return false;
+        }
+        let mut stat = self.statuses.iter().take(index);
+        let mut chains = self.broken_chains.iter();
+        while let Some(broken_chain) = chains.next() {
+            // Fast forward to next broken
+            let mut next = stat.next();
+            while let Some(SpringStatus::Ok) = next {
+                next = stat.next();
+            }
+            if next == None {
+                return true;
+            }
+            // check that at least the right number of brokens exists
+            for _ in 1..*broken_chain {
+                next = stat.next();
+                if next == None {
+                    return true;
+                }
+                if let Some(SpringStatus::Broken) = next {
+                } else {
+                    return false;
+                }
+            }
+            // check that the next one is not broken
+            if matches!(stat.next(), Some(&SpringStatus::Broken)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     pub fn is_valid(&self) -> bool {
@@ -158,8 +256,8 @@ impl Display for SpringStatus {
             f,
             "{}",
             match self {
-                Self::Ok => "✔",
-                Self::Broken => "X",
+                Self::Ok => ".",
+                Self::Broken => "x",
                 Self::Unknown => "?",
             }
         )

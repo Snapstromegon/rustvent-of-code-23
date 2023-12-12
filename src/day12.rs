@@ -70,7 +70,7 @@ impl SpringSet {
             .count()
     }
 
-    pub fn counts_per_type(&self) -> (usize, usize, usize) {
+    pub fn _counts_per_type(&self) -> (usize, usize, usize) {
         let mut res = (0, 0, 0);
         for status in &self.statuses {
             match status {
@@ -148,20 +148,19 @@ impl SpringSet {
             return false;
         }
         let mut stat = self.statuses.iter().take(index);
-        let mut chains = self.broken_chains.iter();
-        while let Some(broken_chain) = chains.next() {
+        for broken_chain in &self.broken_chains {
             // Fast forward to next broken
             let mut next = stat.next();
             while let Some(SpringStatus::Ok) = next {
                 next = stat.next();
             }
-            if next == None {
+            if next.is_none() {
                 return true;
             }
             // check that at least the right number of brokens exists
             for _ in 1..*broken_chain {
                 next = stat.next();
-                if next == None {
+                if next.is_none() {
                     return true;
                 }
                 if let Some(SpringStatus::Broken) = next {
@@ -174,7 +173,7 @@ impl SpringSet {
                 return false;
             }
         }
-        return true;
+        true
     }
 
     pub fn is_valid(&self) -> bool {
@@ -182,14 +181,13 @@ impl SpringSet {
             return false;
         }
         let mut stat = self.statuses.iter();
-        let mut chains = self.broken_chains.iter();
-        while let Some(broken_chain) = chains.next() {
+        for broken_chain in &self.broken_chains {
             // Fast forward to next broken
             let mut next = stat.next();
             while let Some(SpringStatus::Ok) = next {
                 next = stat.next()
             }
-            if next == None {
+            if next.is_none() {
                 return false;
             }
             // check that at least the right number of brokens exists

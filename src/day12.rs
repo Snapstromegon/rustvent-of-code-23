@@ -59,8 +59,8 @@ fn count_ways(
                 let (run, remaining) = broken_chains.split_first().unwrap();
                 let elems: Vec<_> = statuses.iter().take(*run).collect();
                 if elems.len() < *run
-                    || elems.iter().any(|s| **s == SpringStatus::Ok)
                     || (*run < statuses.len() && statuses[*run] == SpringStatus::Broken)
+                    || elems.iter().any(|s| **s == SpringStatus::Ok)
                 {
                     0
                 } else if run < &statuses.len() {
@@ -95,18 +95,15 @@ struct SpringSet {
 
 impl SpringSet {
     pub fn unfold(&self) -> Self {
-        let mut statuses = vec![];
-        let mut broken_chains = vec![];
-        for i in 0..5 {
-            broken_chains.extend(self.broken_chains.iter().cloned());
-            statuses.extend(self.statuses.iter().cloned());
-            if i != 4 {
-                statuses.push(SpringStatus::Unknown);
-            }
-        }
         Self {
-            statuses,
-            broken_chains,
+            statuses: (0..5)
+                .map(|_| self.statuses.clone())
+                .collect::<Vec<_>>()
+                .join(&SpringStatus::Unknown),
+            broken_chains: (0..5)
+                .map(|_| self.broken_chains.clone())
+                .flatten()
+                .collect::<Vec<_>>(),
         }
     }
 

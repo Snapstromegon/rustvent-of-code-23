@@ -5,6 +5,21 @@ use crate::solution::Solution;
 pub struct Day;
 
 impl Solution for Day {
+    /// ```
+    /// # use rustvent::utils::read_input;
+    /// # use rustvent::solution::Solution;
+    /// # use rustvent::day04::Day;
+    /// let input = read_input(4, true, 1).unwrap();
+    /// assert_eq!(Day.part1(&input), Some(13))
+    /// ```
+    ///
+    /// ```
+    /// # use rustvent::utils::read_input;
+    /// # use rustvent::solution::Solution;
+    /// # use rustvent::day04::Day;
+    /// let input = read_input(4, false, 1).unwrap();
+    /// assert_eq!(Day.part1(&input), Some(23235))
+    /// ```
     fn part1(&self, input: &str) -> Option<usize> {
         Some(
             input
@@ -15,6 +30,21 @@ impl Solution for Day {
         )
     }
 
+    /// ```
+    /// # use rustvent::utils::read_input;
+    /// # use rustvent::solution::Solution;
+    /// # use rustvent::day04::Day;
+    /// let input = read_input(4, true, 2).unwrap();
+    /// assert_eq!(Day.part2(&input), Some(30))
+    /// ```
+    ///
+    /// ```
+    /// # use rustvent::utils::read_input;
+    /// # use rustvent::solution::Solution;
+    /// # use rustvent::day04::Day;
+    /// let input = read_input(4, false, 2).unwrap();
+    /// assert_eq!(Day.part2(&input), Some(5920640))
+    /// ```
     fn part2(&self, input: &str) -> Option<usize> {
         let cards = input
             .lines()
@@ -25,7 +55,7 @@ impl Solution for Day {
             let card_points = cards[i].number_of_winning();
             for j in 0..card_points {
                 if i + j + 1 < card_counts.len() {
-                    card_counts[i+j+1] += card_counts[i];
+                    card_counts[i + j + 1] += card_counts[i];
                 }
             }
         }
@@ -62,9 +92,6 @@ impl FromStr for Card {
             .split_whitespace()
             .map(|s| s.parse::<usize>().unwrap())
             .collect::<Vec<usize>>();
-        Ok(Card {
-            winning,
-            actual,
-        })
+        Ok(Card { winning, actual })
     }
 }

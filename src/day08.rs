@@ -5,8 +5,26 @@ use crate::solution::Solution;
 pub struct Day;
 
 impl Solution for Day {
+    /// ```
+    /// # use rustvent::utils::read_input;
+    /// # use rustvent::solution::Solution;
+    /// # use rustvent::day08::Day;
+    /// let input = read_input(8, true, 1).unwrap();
+    /// assert_eq!(Day.part1(&input), Some(6))
+    /// ```
+    ///
+    /// ```
+    /// # use rustvent::utils::read_input;
+    /// # use rustvent::solution::Solution;
+    /// # use rustvent::day08::Day;
+    /// let input = read_input(8, false, 1).unwrap();
+    /// assert_eq!(Day.part1(&input), Some(22357))
+    /// ```
     fn part1(&self, input: &str) -> Option<usize> {
-        let (path, rest) = input.split_once("\r\n\r\n").or_else(|| input.split_once("\n\n")).unwrap();
+        let (path, rest) = input
+            .split_once("\r\n\r\n")
+            .or_else(|| input.split_once("\n\n"))
+            .unwrap();
         let map: Map = rest.parse().unwrap();
         let path: Vec<Direction> = path.chars().map(|c| c.into()).collect();
         if map.mapping.contains_key("AAA") {
@@ -23,8 +41,26 @@ impl Solution for Day {
         None
     }
 
+    /// ```
+    /// # use rustvent::utils::read_input;
+    /// # use rustvent::solution::Solution;
+    /// # use rustvent::day08::Day;
+    /// let input = read_input(8, true, 2).unwrap();
+    /// assert_eq!(Day.part2(&input), Some(6))
+    /// ```
+    ///
+    /// ```
+    /// # use rustvent::utils::read_input;
+    /// # use rustvent::solution::Solution;
+    /// # use rustvent::day08::Day;
+    /// let input = read_input(8, false, 2).unwrap();
+    /// assert_eq!(Day.part2(&input), Some(10371555451871))
+    /// ```
     fn part2(&self, input: &str) -> Option<usize> {
-        let (path, rest) = input.split_once("\r\n\r\n").or_else(|| input.split_once("\n\n")).unwrap();
+        let (path, rest) = input
+            .split_once("\r\n\r\n")
+            .or_else(|| input.split_once("\n\n"))
+            .unwrap();
         let map: Map = rest.parse().unwrap();
         let path: Vec<Direction> = path.chars().map(|c| c.into()).collect();
         let starts: Vec<&str> = map

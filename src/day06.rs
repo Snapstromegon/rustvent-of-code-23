@@ -3,6 +3,21 @@ use crate::solution::Solution;
 pub struct Day;
 
 impl Solution for Day {
+    /// ```
+    /// # use rustvent::utils::read_input;
+    /// # use rustvent::solution::Solution;
+    /// # use rustvent::day06::Day;
+    /// let input = read_input(6, true, 1).unwrap();
+    /// assert_eq!(Day.part1(&input), Some(288))
+    /// ```
+    ///
+    /// ```
+    /// # use rustvent::utils::read_input;
+    /// # use rustvent::solution::Solution;
+    /// # use rustvent::day06::Day;
+    /// let input = read_input(6, false, 1).unwrap();
+    /// assert_eq!(Day.part1(&input), Some(128700))
+    /// ```
     fn part1(&self, input: &str) -> Option<usize> {
         let races = parse_input(input);
         /*
@@ -20,6 +35,21 @@ impl Solution for Day {
         )
     }
 
+    /// ```
+    /// # use rustvent::utils::read_input;
+    /// # use rustvent::solution::Solution;
+    /// # use rustvent::day06::Day;
+    /// let input = read_input(6, true, 2).unwrap();
+    /// assert_eq!(Day.part2(&input), Some(71503))
+    /// ```
+    ///
+    /// ```
+    /// # use rustvent::utils::read_input;
+    /// # use rustvent::solution::Solution;
+    /// # use rustvent::day06::Day;
+    /// let input = read_input(6, false, 2).unwrap();
+    /// assert_eq!(Day.part2(&input), Some(39594072))
+    /// ```
     fn part2(&self, input: &str) -> Option<usize> {
         let lines: Vec<i64> = input
             .lines()

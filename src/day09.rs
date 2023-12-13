@@ -5,16 +5,49 @@ use crate::solution::Solution;
 pub struct Day;
 
 impl Solution for Day {
+    /// ```
+    /// # use rustvent::utils::read_input;
+    /// # use rustvent::solution::Solution;
+    /// # use rustvent::day09::Day;
+    /// let input = read_input(9, true, 1).unwrap();
+    /// assert_eq!(Day.part1(&input), Some(114))
+    /// ```
+    ///
+    /// ```
+    /// # use rustvent::utils::read_input;
+    /// # use rustvent::solution::Solution;
+    /// # use rustvent::day09::Day;
+    /// let input = read_input(9, false, 1).unwrap();
+    /// assert_eq!(Day.part1(&input), Some(1681758908))
+    /// ```
     fn part1(&self, input: &str) -> Option<usize> {
         let trees: Vec<PredictionTree> = input.lines().map(|l| l.parse().unwrap()).collect();
         let predictions = trees.iter().map(|t| t.get_prediction()).collect::<Vec<_>>();
         Some(predictions.iter().sum::<i64>() as usize)
     }
 
+    /// ```
+    /// # use rustvent::utils::read_input;
+    /// # use rustvent::solution::Solution;
+    /// # use rustvent::day09::Day;
+    /// let input = read_input(9, true, 2).unwrap();
+    /// assert_eq!(Day.part2(&input), Some(2))
+    /// ```
+    ///
+    /// ```
+    /// # use rustvent::utils::read_input;
+    /// # use rustvent::solution::Solution;
+    /// # use rustvent::day09::Day;
+    /// let input = read_input(9, false, 2).unwrap();
+    /// assert_eq!(Day.part2(&input), Some(803))
+    /// ```
     fn part2(&self, input: &str) -> Option<usize> {
-      let trees: Vec<PredictionTree> = input.lines().map(|l| l.parse().unwrap()).collect();
-      let predictions = trees.iter().map(|t| t.get_postdiction()).collect::<Vec<_>>();
-      Some(predictions.iter().sum::<i64>() as usize)
+        let trees: Vec<PredictionTree> = input.lines().map(|l| l.parse().unwrap()).collect();
+        let predictions = trees
+            .iter()
+            .map(|t| t.get_postdiction())
+            .collect::<Vec<_>>();
+        Some(predictions.iter().sum::<i64>() as usize)
     }
 }
 
@@ -27,10 +60,7 @@ struct PredictionTree {
 impl PredictionTree {
     fn new(nodes: Vec<i64>) -> Self {
         if nodes.len() < 2 {
-            return Self {
-                nodes,
-                child: None,
-            };
+            return Self { nodes, child: None };
         }
         let mut child_nodes = Vec::new();
         let mut node_iter = nodes.iter();
@@ -59,7 +89,7 @@ impl PredictionTree {
 
     pub fn get_postdiction(&self) -> i64 {
         if let Some(child) = &self.child {
-          self.nodes.first().unwrap() - child.get_postdiction()
+            self.nodes.first().unwrap() - child.get_postdiction()
         } else {
             self.nodes[0]
         }

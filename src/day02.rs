@@ -5,11 +5,46 @@ use crate::solution::Solution;
 pub struct Day;
 
 impl Solution for Day {
+    /// ```
+    /// # use rustvent::utils::read_input;
+    /// # use rustvent::solution::Solution;
+    /// # use rustvent::day02::Day;
+    /// let input = read_input(2, true, 1).unwrap();
+    /// assert_eq!(Day.part1(&input), Some(8))
+    /// ```
+    ///
+    /// ```
+    /// # use rustvent::utils::read_input;
+    /// # use rustvent::solution::Solution;
+    /// # use rustvent::day02::Day;
+    /// let input = read_input(2, false, 1).unwrap();
+    /// assert_eq!(Day.part1(&input), Some(2256))
+    /// ```
     fn part1(&self, input: &str) -> Option<usize> {
         let games = input.lines().map(|s| s.parse::<Game>().unwrap());
-        Some(games.filter(|game| game.is_possible((12, 13, 14))).map(|game| game.id).sum())
+        Some(
+            games
+                .filter(|game| game.is_possible((12, 13, 14)))
+                .map(|game| game.id)
+                .sum(),
+        )
     }
 
+    /// ```
+    /// # use rustvent::utils::read_input;
+    /// # use rustvent::solution::Solution;
+    /// # use rustvent::day02::Day;
+    /// let input = read_input(2, true, 2).unwrap();
+    /// assert_eq!(Day.part2(&input), Some(2286))
+    /// ```
+    ///
+    /// ```
+    /// # use rustvent::utils::read_input;
+    /// # use rustvent::solution::Solution;
+    /// # use rustvent::day02::Day;
+    /// let input = read_input(2, false, 2).unwrap();
+    /// assert_eq!(Day.part2(&input), Some(74229))
+    /// ```
     fn part2(&self, input: &str) -> Option<usize> {
         let games = input.lines().map(|s| s.parse::<Game>().unwrap());
         Some(games.map(|game| game.get_power()).sum())

@@ -5,6 +5,21 @@ use crate::solution::Solution;
 pub struct Day;
 
 impl Solution for Day {
+    /// ```
+    /// # use rustvent::utils::read_input;
+    /// # use rustvent::solution::Solution;
+    /// # use rustvent::day07::Day;
+    /// let input = read_input(7, true, 1).unwrap();
+    /// assert_eq!(Day.part1(&input), Some(6440))
+    /// ```
+    ///
+    /// ```
+    /// # use rustvent::utils::read_input;
+    /// # use rustvent::solution::Solution;
+    /// # use rustvent::day07::Day;
+    /// let input = read_input(7, false, 1).unwrap();
+    /// assert_eq!(Day.part1(&input), Some(253603890))
+    /// ```
     fn part1(&self, input: &str) -> Option<usize> {
         let mut hands = input
             .lines()
@@ -19,6 +34,21 @@ impl Solution for Day {
         Some(winnings)
     }
 
+    /// ```
+    /// # use rustvent::utils::read_input;
+    /// # use rustvent::solution::Solution;
+    /// # use rustvent::day07::Day;
+    /// let input = read_input(7, true, 2).unwrap();
+    /// assert_eq!(Day.part2(&input), Some(5905))
+    /// ```
+    ///
+    /// ```
+    /// # use rustvent::utils::read_input;
+    /// # use rustvent::solution::Solution;
+    /// # use rustvent::day07::Day;
+    /// let input = read_input(7, false, 2).unwrap();
+    /// assert_eq!(Day.part2(&input), Some(253630098))
+    /// ```
     fn part2(&self, input: &str) -> Option<usize> {
         let mut hands = input
             .lines()

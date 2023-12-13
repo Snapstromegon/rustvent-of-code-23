@@ -5,6 +5,21 @@ use crate::solution::Solution;
 pub struct Day;
 
 impl Solution for Day {
+  /// ```
+  /// # use rustvent::utils::read_input;
+  /// # use rustvent::solution::Solution;
+  /// # use rustvent::day13::Day;
+  /// let input = read_input(13, true, 1).unwrap();
+  /// assert_eq!(Day.part1(&input), Some(405))
+  /// ```
+  ///
+  /// ```
+  /// # use rustvent::utils::read_input;
+  /// # use rustvent::solution::Solution;
+  /// # use rustvent::day13::Day;
+  /// let input = read_input(13, false, 1).unwrap();
+  /// assert_eq!(Day.part1(&input), Some(34100))
+  /// ```
     fn part1(&self, input: &str) -> Option<usize> {
         let blocks = input
             .split("\r\n\r\n")
@@ -13,6 +28,21 @@ impl Solution for Day {
         Some(maps.iter().map(|m| m.get_summary()).sum())
     }
 
+  /// ```
+  /// # use rustvent::utils::read_input;
+  /// # use rustvent::solution::Solution;
+  /// # use rustvent::day13::Day;
+  /// let input = read_input(13, true, 2).unwrap();
+  /// assert_eq!(Day.part2(&input), Some(400))
+  /// ```
+  ///
+  /// ```
+  /// # use rustvent::utils::read_input;
+  /// # use rustvent::solution::Solution;
+  /// # use rustvent::day13::Day;
+  /// let input = read_input(13, false, 2).unwrap();
+  /// assert_eq!(Day.part2(&input), Some(33106))
+  /// ```
     fn part2(&self, input: &str) -> Option<usize> {
         let blocks = input
             .split("\r\n\r\n")

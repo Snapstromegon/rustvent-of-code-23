@@ -15,15 +15,13 @@ fn part1_challenge() {
 }
 
 #[test]
-#[ignore]
 fn part2_example() {
     let input = read_input(12, true, 2).unwrap();
-    assert_eq!(Day.part2(&input), Some(82000210));
+    assert_eq!(Day.part2(&input), Some(525152));
 }
 
 #[test]
-#[ignore]
 fn part2_challenge() {
     let input = read_input(12, false, 2).unwrap();
-    assert_eq!(Day.part2(&input), Some(618800410814));
+    assert_eq!(Day.part2(&input), Some(17485169859432));
 }

@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::fmt;
 use std::{fmt::Display, str::FromStr};
 
@@ -14,18 +15,76 @@ impl Solution for Day {
     fn part2(&self, input: &str) -> Option<usize> {
         let spring_sets: Vec<SpringSet> = input.lines().map(|line| line.parse().unwrap()).collect();
         let unfolded: Vec<SpringSet> = spring_sets.iter().map(|s| s.unfold()).collect();
-        Some(
-            unfolded
-                .iter()
-                .map(|s| {
-                    println!("Processing {s}");
-                    let count = s.count_possibles();
-                    println!("{count}");
-                    count
-                })
-                .sum(),
-        )
+        Some(unfolded.iter().map(|s| s.count_possibles()).sum())
     }
+}
+
+fn memo_count(
+    statuses: Vec<SpringStatus>,
+    broken_chains: Vec<usize>,
+    cache: &mut HashMap<(Vec<SpringStatus>, Vec<usize>), usize>,
+) -> usize {
+    let clone = (statuses.clone(), broken_chains.clone());
+    if let Some(count) = cache.get(&clone) {
+        return *count;
+    }
+    let res = count_ways(statuses, broken_chains, cache);
+    cache.insert(clone.clone(), res);
+    res
+}
+
+fn count_ways(
+    statuses: Vec<SpringStatus>,
+    broken_chains: Vec<usize>,
+    cache: &mut HashMap<(Vec<SpringStatus>, Vec<usize>), usize>,
+) -> usize {
+    let res = if statuses.is_empty() {
+        if broken_chains.is_empty() {
+            1
+        } else {
+            0
+        }
+    } else if broken_chains.is_empty() {
+        if statuses.iter().any(|s| *s == SpringStatus::Broken) {
+            0
+        } else {
+            1
+        }
+    } else if statuses.len() < broken_chains.len() + broken_chains.iter().sum::<usize>() - 1 {
+        0
+    } else {
+        match statuses[0] {
+            SpringStatus::Ok => memo_count(statuses[1..].to_vec(), broken_chains, cache),
+            SpringStatus::Broken => {
+                let (run, remaining) = broken_chains.split_first().unwrap();
+                let elems: Vec<_> = statuses.iter().take(*run).collect();
+                if elems.len() < *run
+                    || elems.iter().any(|s| **s == SpringStatus::Ok)
+                    || (*run < statuses.len() && statuses[*run] == SpringStatus::Broken)
+                {
+                    0
+                } else if run < &statuses.len() {
+                    let next_statuses = &statuses[run + 1..];
+                    memo_count(next_statuses.to_vec(), remaining.to_vec(), cache)
+                } else {
+                    1
+                }
+            }
+            SpringStatus::Unknown => {
+                let statuses_ok: Vec<SpringStatus> = [SpringStatus::Ok]
+                    .into_iter()
+                    .chain(statuses.clone().iter().skip(1).cloned())
+                    .collect();
+                let statuses_broken: Vec<SpringStatus> = [SpringStatus::Broken]
+                    .into_iter()
+                    .chain(statuses.clone().iter().skip(1).cloned())
+                    .collect();
+                memo_count(statuses_ok.to_vec(), broken_chains.clone(), cache)
+                    + memo_count(statuses_broken.to_vec(), broken_chains.clone(), cache)
+            }
+        }
+    };
+    res
 }
 
 #[derive(Debug, Clone)]
@@ -38,10 +97,12 @@ impl SpringSet {
     pub fn unfold(&self) -> Self {
         let mut statuses = vec![];
         let mut broken_chains = vec![];
-        for _i in 0..5 {
-            statuses.extend(self.statuses.iter().cloned());
-            statuses.push(SpringStatus::Unknown);
+        for i in 0..5 {
             broken_chains.extend(self.broken_chains.iter().cloned());
+            statuses.extend(self.statuses.iter().cloned());
+            if i != 4 {
+                statuses.push(SpringStatus::Unknown);
+            }
         }
         Self {
             statuses,
@@ -49,160 +110,12 @@ impl SpringSet {
         }
     }
 
-    pub fn number_of_unknowns(&self) -> usize {
-        self.statuses
-            .iter()
-            .filter(|status| **status == SpringStatus::Unknown)
-            .count()
-    }
-
-    pub fn number_of_possible_brokens(&self) -> usize {
-        self.statuses
-            .iter()
-            .filter(|status| **status == SpringStatus::Unknown || **status == SpringStatus::Broken)
-            .count()
-    }
-
-    pub fn number_of_possible_oks(&self) -> usize {
-        self.statuses
-            .iter()
-            .filter(|status| **status == SpringStatus::Unknown || **status == SpringStatus::Ok)
-            .count()
-    }
-
-    pub fn _counts_per_type(&self) -> (usize, usize, usize) {
-        let mut res = (0, 0, 0);
-        for status in &self.statuses {
-            match status {
-                SpringStatus::Ok => res.0 += 1,
-                SpringStatus::Broken => res.1 += 1,
-                SpringStatus::Unknown => res.2 += 1,
-            }
-        }
-        res
-    }
-
-    pub fn total_brokens(&self) -> usize {
-        self.broken_chains.iter().sum()
-    }
-
-    pub fn min_ok(&self) -> usize {
-        if self.broken_chains.is_empty() {
-            0
-        } else {
-            self.broken_chains.len() - 1
-        }
-    }
-
     pub fn count_possibles(&self) -> usize {
-        if self.number_of_unknowns() == 0 {
-            if self.is_valid() {
-                // println!("Counting for OK {:?}", self);
-                1
-            } else {
-                // println!("Counting for BROKEN {:?}", self);
-                0
-            }
-        } else if self.number_of_possible_brokens() < self.total_brokens() || self.min_ok() > self.number_of_possible_oks() {
-            // println!(
-            //     "abort {self} - possible: {}, brokens: {}, min_ok: {}, possible_ok: {}",
-            //     self.number_of_possible_brokens(),
-            //     self.total_brokens(),
-            //     self.min_ok(),
-            //     self.number_of_possible_oks()
-            // );
-            0
-        } else {
-            let first_unknown_index = self
-                .statuses
-                .iter()
-                .enumerate()
-                .filter(|(_, s)| **s == SpringStatus::Unknown)
-                .map(|(i, _)| i)
-                .next()
-                .unwrap();
-            let valid_until = self.is_valid_until(first_unknown_index);
-            // println!("is valid until {self} - {first_unknown_index} - {valid_until}");
-            if valid_until {
-                let mut clone_ok = self.clone();
-                clone_ok.statuses[first_unknown_index] = SpringStatus::Ok;
-                let mut clone_broken = self.clone();
-                clone_broken.statuses[first_unknown_index] = SpringStatus::Broken;
-                clone_ok.count_possibles() + clone_broken.count_possibles()
-            } else {
-                0
-            }
-        }
-    }
-
-    pub fn is_valid_until(&self, index: usize) -> bool {
-        if index == 0 {
-            return true;
-        }
-        if self
-            .statuses
-            .iter()
-            .take(index - 1)
-            .any(|s| *s == SpringStatus::Unknown)
-        {
-            return false;
-        }
-        let mut stat = self.statuses.iter().take(index);
-        for broken_chain in &self.broken_chains {
-            // Fast forward to next broken
-            let mut next = stat.next();
-            while let Some(SpringStatus::Ok) = next {
-                next = stat.next();
-            }
-            if next.is_none() {
-                return true;
-            }
-            // check that at least the right number of brokens exists
-            for _ in 1..*broken_chain {
-                next = stat.next();
-                if next.is_none() {
-                    return true;
-                }
-                if let Some(SpringStatus::Broken) = next {
-                } else {
-                    return false;
-                }
-            }
-            // check that the next one is not broken
-            if matches!(stat.next(), Some(&SpringStatus::Broken)) {
-                return false;
-            }
-        }
-        true
-    }
-
-    pub fn is_valid(&self) -> bool {
-        if self.number_of_unknowns() > 0 {
-            return false;
-        }
-        let mut stat = self.statuses.iter();
-        for broken_chain in &self.broken_chains {
-            // Fast forward to next broken
-            let mut next = stat.next();
-            while let Some(SpringStatus::Ok) = next {
-                next = stat.next()
-            }
-            if next.is_none() {
-                return false;
-            }
-            // check that at least the right number of brokens exists
-            for _ in 1..*broken_chain {
-                if let Some(SpringStatus::Broken) = stat.next() {
-                } else {
-                    return false;
-                }
-            }
-            // check that the next one is not broken
-            if matches!(stat.next(), Some(&SpringStatus::Broken)) {
-                return false;
-            }
-        }
-        stat.all(|s| *s == SpringStatus::Ok)
+        memo_count(
+            self.statuses.clone(),
+            self.broken_chains.clone(),
+            &mut HashMap::new(),
+        )
     }
 }
 
@@ -230,7 +143,7 @@ impl Display for SpringSet {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash)]
 enum SpringStatus {
     Ok,
     Broken,
@@ -255,9 +168,31 @@ impl Display for SpringStatus {
             "{}",
             match self {
                 Self::Ok => ".",
-                Self::Broken => "x",
+                Self::Broken => "#",
                 Self::Unknown => "?",
             }
         )
+    }
+}
+
+impl Ord for SpringStatus {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        match (self, other) {
+            (Self::Ok, Self::Ok) => std::cmp::Ordering::Equal,
+            (Self::Ok, Self::Broken) => std::cmp::Ordering::Less,
+            (Self::Ok, Self::Unknown) => std::cmp::Ordering::Less,
+            (Self::Broken, Self::Ok) => std::cmp::Ordering::Greater,
+            (Self::Broken, Self::Broken) => std::cmp::Ordering::Equal,
+            (Self::Broken, Self::Unknown) => std::cmp::Ordering::Less,
+            (Self::Unknown, Self::Ok) => std::cmp::Ordering::Greater,
+            (Self::Unknown, Self::Broken) => std::cmp::Ordering::Greater,
+            (Self::Unknown, Self::Unknown) => std::cmp::Ordering::Equal,
+        }
+    }
+}
+
+impl PartialOrd for SpringStatus {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
     }
 }

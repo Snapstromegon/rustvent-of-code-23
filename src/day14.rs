@@ -71,12 +71,8 @@ impl Solution for Day {
     /// ```
     fn part2(&self, input: &str) -> Option<usize> {
         let mut dish = input.parse::<Dish>().unwrap();
-        println!("{}", dish);
         let mut cache = HashMap::new();
         for i in 0..1_000_000_000 {
-          if i % 1_000 == 0 {
-            println!("Cycle: {i}");
-          }
           dish.cycle();
           if let Some(j) = cache.get(&dish) {
             let cycle_length = i - j;

@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use crate::solution::Solution;
 
 pub struct Day;
@@ -40,12 +38,13 @@ impl Solution for Day {
     /// assert_eq!(Day.part2(&input), Some(245223))
     /// ```
     fn part2(&self, input: &str) -> Option<usize> {
-        let operations: Vec<Operation> = input.split(',').map(|s| s.parse().unwrap()).collect();
-        let mut boxes: Vec<LensBox> = (0..256).map(|_| LensBox { lenses: vec![] }).collect();
-        for op in operations {
-            let box_number = op.box_number();
-            boxes[box_number].apply(op);
-        }
+        let mut boxes: Vec<LensBox> = (0..=255).map(|_| LensBox { lenses: vec![] }).collect();
+        input
+            .split(',')
+            .map(|s| s.into())
+            .for_each(|op: Operation| {
+                boxes[op.box_number()].apply(op);
+            });
         Some(
             boxes
                 .iter()
@@ -64,16 +63,16 @@ fn xmas_hash(input: &str) -> usize {
 }
 
 #[derive(Debug)]
-struct LensBox {
-    lenses: Vec<Lens>,
+struct LensBox<'a> {
+    lenses: Vec<Lens<'a>>,
 }
 
-impl LensBox {
+impl<'a> LensBox<'a> {
     fn pos_lens_with_label(&self, label: &str) -> Option<usize> {
         self.lenses.iter().position(|lens| lens.label == label)
     }
 
-    pub fn apply(&mut self, op: Operation) {
+    pub fn apply(&mut self, op: Operation<'a>) {
         match (op.clone(), self.pos_lens_with_label(op.label())) {
             (Operation::Remove(_), None) => {}
             (Operation::Remove(_), Some(pos)) => {
@@ -97,29 +96,28 @@ impl LensBox {
 }
 
 #[derive(Debug, Clone)]
-struct Lens {
-    label: String,
+struct Lens<'a> {
+    label: &'a str,
     focal_length: usize,
 }
 
-impl FromStr for Lens {
-    type Err = ();
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+impl<'a> From<&'a str> for Lens<'a> {
+    fn from(s: &'a str) -> Self {
         let (label, f_length) = s.split_once('=').unwrap();
-        Ok(Self {
-            label: label.to_string(),
+        Self {
+            label,
             focal_length: f_length.parse().unwrap(),
-        })
+        }
     }
 }
 
 #[derive(Debug, Clone)]
-enum Operation {
-    Remove(String),
-    Set(String, Lens),
+enum Operation<'a> {
+    Remove(&'a str),
+    Set(&'a str, Lens<'a>),
 }
 
-impl Operation {
+impl<'a> Operation<'a> {
     pub fn label(&self) -> &str {
         match self {
             Self::Remove(x) => x,
@@ -132,14 +130,13 @@ impl Operation {
     }
 }
 
-impl FromStr for Operation {
-    type Err = ();
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+impl<'a> From<&'a str> for Operation<'a> {
+    fn from(s: &'a str) -> Self {
         if s.ends_with('-') {
-            Ok(Self::Remove(s[0..s.len() - 1].to_string()))
+            Self::Remove(&s[0..s.len() - 1])
         } else {
             let label = s.split_once('=').unwrap().0;
-            Ok(Self::Set(label.to_string(), s.parse().unwrap()))
+            Self::Set(label, s.into())
         }
     }
 }

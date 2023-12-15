@@ -131,8 +131,7 @@ impl SpringSet {
                 .collect::<Vec<_>>()
                 .join(&SpringStatus::Unknown),
             broken_chains: (0..5)
-                .map(|_| self.broken_chains.clone())
-                .flatten()
+                .flat_map(|_| self.broken_chains.clone())
                 .collect::<Vec<_>>(),
         }
     }

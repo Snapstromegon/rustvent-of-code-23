@@ -7,41 +7,11 @@ use crate::solution::Solution;
 pub struct Day;
 
 impl Solution for Day {
-    /// ```
-    /// # use rustvent::utils::read_input;
-    /// # use rustvent::solution::Solution;
-    /// # use rustvent::day12::Day;
-    /// let input = read_input(12, true, 1).unwrap();
-    /// assert_eq!(Day.part1(&input), Some(21))
-    /// ```
-    ///
-    /// ```
-    /// # use rustvent::utils::read_input;
-    /// # use rustvent::solution::Solution;
-    /// # use rustvent::day12::Day;
-    /// let input = read_input(12, false, 1).unwrap();
-    /// assert_eq!(Day.part1(&input), Some(7541))
-    /// ```
     fn part1(&self, input: &str) -> Option<usize> {
         let spring_sets: Vec<SpringSet> = input.lines().map(|line| line.parse().unwrap()).collect();
         Some(spring_sets.iter().map(|s| s.count_possibles()).sum())
     }
 
-    /// ```
-    /// # use rustvent::utils::read_input;
-    /// # use rustvent::solution::Solution;
-    /// # use rustvent::day12::Day;
-    /// let input = read_input(12, true, 2).unwrap();
-    /// assert_eq!(Day.part2(&input), Some(525152))
-    /// ```
-    ///
-    /// ```
-    /// # use rustvent::utils::read_input;
-    /// # use rustvent::solution::Solution;
-    /// # use rustvent::day12::Day;
-    /// let input = read_input(12, false, 2).unwrap();
-    /// assert_eq!(Day.part2(&input), Some(17485169859432))
-    /// ```
     fn part2(&self, input: &str) -> Option<usize> {
         let spring_sets: Vec<SpringSet> = input.lines().map(|line| line.parse().unwrap()).collect();
         let unfolded: Vec<SpringSet> = spring_sets.iter().map(|s| s.unfold()).collect();
@@ -220,5 +190,35 @@ impl Ord for SpringStatus {
 impl PartialOrd for SpringStatus {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         Some(self.cmp(other))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::utils::read_input;
+
+    #[test]
+    fn test_part1_example() {
+        let input = read_input(12, true, 1).unwrap();
+        assert_eq!(Day.part1(&input), Some(21))
+    }
+
+    #[test]
+    fn test_part1_challenge() {
+        let input = read_input(12, false, 1).unwrap();
+        assert_eq!(Day.part1(&input), Some(7541))
+    }
+
+    #[test]
+    fn test_part2_example() {
+        let input = read_input(12, true, 2).unwrap();
+        assert_eq!(Day.part2(&input), Some(525152))
+    }
+
+    #[test]
+    fn test_part2_challenge() {
+        let input = read_input(12, false, 2).unwrap();
+        assert_eq!(Day.part2(&input), Some(17485169859432))
     }
 }

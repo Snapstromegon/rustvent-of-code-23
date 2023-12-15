@@ -3,40 +3,10 @@ use crate::solution::Solution;
 pub struct Day;
 
 impl Solution for Day {
-    /// ```
-    /// # use rustvent::utils::read_input;
-    /// # use rustvent::solution::Solution;
-    /// # use rustvent::day15::Day;
-    /// let input = read_input(15, true, 1).unwrap();
-    /// assert_eq!(Day.part1(&input), Some(1320))
-    /// ```
-    ///
-    /// ```
-    /// # use rustvent::utils::read_input;
-    /// # use rustvent::solution::Solution;
-    /// # use rustvent::day15::Day;
-    /// let input = read_input(15, false, 1).unwrap();
-    /// assert_eq!(Day.part1(&input), Some(495972))
-    /// ```
     fn part1(&self, input: &str) -> Option<usize> {
         Some(input.split(',').map(xmas_hash).sum())
     }
 
-    /// ```
-    /// # use rustvent::utils::read_input;
-    /// # use rustvent::solution::Solution;
-    /// # use rustvent::day15::Day;
-    /// let input = read_input(15, true, 2).unwrap();
-    /// assert_eq!(Day.part2(&input), Some(145))
-    /// ```
-    ///
-    /// ```
-    /// # use rustvent::utils::read_input;
-    /// # use rustvent::solution::Solution;
-    /// # use rustvent::day15::Day;
-    /// let input = read_input(15, false, 2).unwrap();
-    /// assert_eq!(Day.part2(&input), Some(245223))
-    /// ```
     fn part2(&self, input: &str) -> Option<usize> {
         let mut boxes: Vec<LensBox> = (0..=255).map(|_| LensBox { lenses: vec![] }).collect();
         input
@@ -138,5 +108,32 @@ impl<'a> From<&'a str> for Operation<'a> {
             let label = s.split_once('=').unwrap().0;
             Self::Set(label, s.into())
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::utils::read_input;
+
+    #[test]
+    fn test_part1_example() {
+        let input = read_input(15, true, 1).unwrap();
+        assert_eq!(Day.part1(&input), Some(1320))
+    }
+    #[test]
+    fn test_part1_challenge() {
+        let input = read_input(15, false, 1).unwrap();
+        assert_eq!(Day.part1(&input), Some(495972))
+    }
+    #[test]
+    fn test_part2_example() {
+        let input = read_input(15, true, 2).unwrap();
+        assert_eq!(Day.part2(&input), Some(145))
+    }
+    #[test]
+    fn test_part2_challenge() {
+        let input = read_input(15, false, 2).unwrap();
+        assert_eq!(Day.part2(&input), Some(245223))
     }
 }

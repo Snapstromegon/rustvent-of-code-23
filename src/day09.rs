@@ -5,42 +5,12 @@ use crate::solution::Solution;
 pub struct Day;
 
 impl Solution for Day {
-    /// ```
-    /// # use rustvent::utils::read_input;
-    /// # use rustvent::solution::Solution;
-    /// # use rustvent::day09::Day;
-    /// let input = read_input(9, true, 1).unwrap();
-    /// assert_eq!(Day.part1(&input), Some(114))
-    /// ```
-    ///
-    /// ```
-    /// # use rustvent::utils::read_input;
-    /// # use rustvent::solution::Solution;
-    /// # use rustvent::day09::Day;
-    /// let input = read_input(9, false, 1).unwrap();
-    /// assert_eq!(Day.part1(&input), Some(1681758908))
-    /// ```
     fn part1(&self, input: &str) -> Option<usize> {
         let trees: Vec<PredictionTree> = input.lines().map(|l| l.parse().unwrap()).collect();
         let predictions = trees.iter().map(|t| t.get_prediction()).collect::<Vec<_>>();
         Some(predictions.iter().sum::<i64>() as usize)
     }
 
-    /// ```
-    /// # use rustvent::utils::read_input;
-    /// # use rustvent::solution::Solution;
-    /// # use rustvent::day09::Day;
-    /// let input = read_input(9, true, 2).unwrap();
-    /// assert_eq!(Day.part2(&input), Some(2))
-    /// ```
-    ///
-    /// ```
-    /// # use rustvent::utils::read_input;
-    /// # use rustvent::solution::Solution;
-    /// # use rustvent::day09::Day;
-    /// let input = read_input(9, false, 2).unwrap();
-    /// assert_eq!(Day.part2(&input), Some(803))
-    /// ```
     fn part2(&self, input: &str) -> Option<usize> {
         let trees: Vec<PredictionTree> = input.lines().map(|l| l.parse().unwrap()).collect();
         let predictions = trees
@@ -103,5 +73,33 @@ impl FromStr for PredictionTree {
         Ok(Self::new(
             s.split_whitespace().map(|s| s.parse().unwrap()).collect(),
         ))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::utils::read_input;
+
+    #[test]
+    fn test_part1_example() {
+        let input = read_input(9, true, 1).unwrap();
+        assert_eq!(Day.part1(&input), Some(114));
+    }
+    #[test]
+    fn test_part1_challenge() {
+        let input = read_input(9, false, 1).unwrap();
+        assert_eq!(Day.part1(&input), Some(1681758908));
+    }
+
+    #[test]
+    fn test_part2_example() {
+        let input = read_input(9, true, 2).unwrap();
+        assert_eq!(Day.part2(&input), Some(2));
+    }
+    #[test]
+    fn test_part2_challenge() {
+        let input = read_input(9, false, 2).unwrap();
+        assert_eq!(Day.part2(&input), Some(803));
     }
 }

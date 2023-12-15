@@ -3,21 +3,6 @@ use crate::solution::Solution;
 pub struct Day;
 
 impl Solution for Day {
-    /// ```
-    /// # use rustvent::utils::read_input;
-    /// # use rustvent::solution::Solution;
-    /// # use rustvent::day05::Day;
-    /// let input = read_input(5, true, 1).unwrap();
-    /// assert_eq!(Day.part1(&input), Some(35))
-    /// ```
-    ///
-    /// ```
-    /// # use rustvent::utils::read_input;
-    /// # use rustvent::solution::Solution;
-    /// # use rustvent::day05::Day;
-    /// let input = read_input(5, false, 1).unwrap();
-    /// assert_eq!(Day.part1(&input), Some(51752125))
-    /// ```
     fn part1(&self, input: &str) -> Option<usize> {
         let mut blocks = input.split("\r\n\r\n").flat_map(|s| s.split("\n\n"));
         let seeds = blocks
@@ -48,21 +33,6 @@ impl Solution for Day {
         Some(sorted[0])
     }
 
-    /// ```ignore
-    /// # use rustvent::utils::read_input;
-    /// # use rustvent::solution::Solution;
-    /// # use rustvent::day05::Day;
-    /// let input = read_input(5, true, 2).unwrap();
-    /// assert_eq!(Day.part2(&input), Some(46))
-    /// ```
-    ///
-    /// ```ignore
-    /// # use rustvent::utils::read_input;
-    /// # use rustvent::solution::Solution;
-    /// # use rustvent::day05::Day;
-    /// let input = read_input(5, false, 2).unwrap();
-    /// assert_eq!(Day.part2(&input), Some(12634632))
-    /// ```
     fn part2(&self, _input: &str) -> Option<usize> {
         None
     }
@@ -163,5 +133,36 @@ impl Mapping {
 
     pub fn map(&self, index: usize) -> usize {
         self.dest + (index - self.source)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::solution::Solution;
+    use crate::utils::read_input;
+
+    #[test]
+    fn test_part1_example() {
+        let input = read_input(5, true, 1).unwrap();
+        assert_eq!(Day.part1(&input), Some(35))
+    }
+    #[test]
+    fn test_part1_challenge() {
+        let input = read_input(5, false, 1).unwrap();
+        assert_eq!(Day.part1(&input), Some(51752125))
+    }
+
+    #[test]
+    #[ignore = "Not yet implemented"]
+    fn test_part2_example() {
+        let input = read_input(5, true, 2).unwrap();
+        assert_eq!(Day.part2(&input), Some(46))
+    }
+    #[test]
+    #[ignore = "Not yet implemented"]
+    fn test_part2_challenge() {
+        let input = read_input(5, false, 2).unwrap();
+        assert_eq!(Day.part2(&input), Some(12634632))
     }
 }

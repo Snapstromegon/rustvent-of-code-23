@@ -3,21 +3,6 @@ use crate::solution::Solution;
 pub struct Day;
 
 impl Solution for Day {
-    /// ```
-    /// # use rustvent::utils::read_input;
-    /// # use rustvent::solution::Solution;
-    /// # use rustvent::day06::Day;
-    /// let input = read_input(6, true, 1).unwrap();
-    /// assert_eq!(Day.part1(&input), Some(288))
-    /// ```
-    ///
-    /// ```
-    /// # use rustvent::utils::read_input;
-    /// # use rustvent::solution::Solution;
-    /// # use rustvent::day06::Day;
-    /// let input = read_input(6, false, 1).unwrap();
-    /// assert_eq!(Day.part1(&input), Some(128700))
-    /// ```
     fn part1(&self, input: &str) -> Option<usize> {
         let races = parse_input(input);
         /*
@@ -35,21 +20,6 @@ impl Solution for Day {
         )
     }
 
-    /// ```
-    /// # use rustvent::utils::read_input;
-    /// # use rustvent::solution::Solution;
-    /// # use rustvent::day06::Day;
-    /// let input = read_input(6, true, 2).unwrap();
-    /// assert_eq!(Day.part2(&input), Some(71503))
-    /// ```
-    ///
-    /// ```
-    /// # use rustvent::utils::read_input;
-    /// # use rustvent::solution::Solution;
-    /// # use rustvent::day06::Day;
-    /// let input = read_input(6, false, 2).unwrap();
-    /// assert_eq!(Day.part2(&input), Some(39594072))
-    /// ```
     fn part2(&self, input: &str) -> Option<usize> {
         let lines: Vec<i64> = input
             .lines()
@@ -85,4 +55,33 @@ fn parse_input(input: &str) -> Vec<(i64, i64)> {
     let times = iters.next().unwrap();
     let distances = iters.next().unwrap();
     times.zip(distances).collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::solution::Solution;
+    use crate::utils::read_input;
+
+    #[test]
+    fn test_part1_example() {
+        let input = read_input(6, true, 1).unwrap();
+        assert_eq!(Day.part1(&input), Some(288))
+    }
+    #[test]
+    fn test_part1_challenge() {
+        let input = read_input(6, false, 1).unwrap();
+        assert_eq!(Day.part1(&input), Some(128700))
+    }
+
+    #[test]
+    fn test_part2_example() {
+        let input = read_input(6, true, 2).unwrap();
+        assert_eq!(Day.part2(&input), Some(71503))
+    }
+    #[test]
+    fn test_part2_challenge() {
+        let input = read_input(6, false, 2).unwrap();
+        assert_eq!(Day.part2(&input), Some(39594072))
+    }
 }

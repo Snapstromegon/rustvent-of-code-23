@@ -1,6 +1,7 @@
 use std::{
+    collections::HashMap,
     fmt::{Display, Formatter},
-    str::FromStr, collections::HashMap,
+    str::FromStr,
 };
 
 use crate::solution::Solution;
@@ -8,21 +9,6 @@ use crate::solution::Solution;
 pub struct Day;
 
 impl Solution for Day {
-    /// ```
-    /// # use rustvent::utils::read_input;
-    /// # use rustvent::solution::Solution;
-    /// # use rustvent::day14::Day;
-    /// let input = read_input(14, true, 1).unwrap();
-    /// assert_eq!(Day.part1(&input), Some(136))
-    /// ```
-    ///
-    /// ```
-    /// # use rustvent::utils::read_input;
-    /// # use rustvent::solution::Solution;
-    /// # use rustvent::day14::Day;
-    /// let input = read_input(14, false, 1).unwrap();
-    /// assert_eq!(Day.part1(&input), Some(108840))
-    /// ```
     fn part1(&self, input: &str) -> Option<usize> {
         let mut cols: Vec<Vec<Rock>> = vec![];
         for line in input.lines() {
@@ -54,36 +40,21 @@ impl Solution for Day {
         Some(total_sum)
     }
 
-    /// ```
-    /// # use rustvent::utils::read_input;
-    /// # use rustvent::solution::Solution;
-    /// # use rustvent::day14::Day;
-    /// let input = read_input(14, true, 2).unwrap();
-    /// assert_eq!(Day.part2(&input), Some(64))
-    /// ```
-    ///
-    /// ```
-    /// # use rustvent::utils::read_input;
-    /// # use rustvent::solution::Solution;
-    /// # use rustvent::day14::Day;
-    /// let input = read_input(14, false, 2).unwrap();
-    /// assert_eq!(Day.part2(&input), Some(103445))
-    /// ```
     fn part2(&self, input: &str) -> Option<usize> {
         let mut dish = input.parse::<Dish>().unwrap();
         let mut cache = HashMap::new();
         for i in 0..1_000_000_000 {
-          dish.cycle();
-          if let Some(j) = cache.get(&dish) {
-            let cycle_length = i - j;
-            let remaining = 1_000_000_000 - i - 1;
-            let remaining_cycles = remaining % cycle_length;
-            for _ in 0..remaining_cycles {
-              dish.cycle();
+            dish.cycle();
+            if let Some(j) = cache.get(&dish) {
+                let cycle_length = i - j;
+                let remaining = 1_000_000_000 - i - 1;
+                let remaining_cycles = remaining % cycle_length;
+                for _ in 0..remaining_cycles {
+                    dish.cycle();
+                }
+                break;
             }
-            break;
-          }
-          cache.insert(dish.clone(), i);
+            cache.insert(dish.clone(), i);
         }
         Some(dish.north_weight())
     }
@@ -115,10 +86,10 @@ impl Dish {
     }
 
     fn cycle(&mut self) {
-      self.tilt(Direction::North);
-      self.tilt(Direction::West);
-      self.tilt(Direction::South);
-      self.tilt(Direction::East);
+        self.tilt(Direction::North);
+        self.tilt(Direction::West);
+        self.tilt(Direction::South);
+        self.tilt(Direction::East);
     }
 
     fn tilt(&mut self, direction: Direction) {
@@ -274,5 +245,32 @@ impl Display for Rock {
             Rock::Round => write!(f, "O"),
             Rock::Cube => write!(f, "#"),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::utils::read_input;
+
+    #[test]
+    fn test_part1_example() {
+        let input = read_input(14, true, 1).unwrap();
+        assert_eq!(Day.part1(&input), Some(136))
+    }
+    #[test]
+    fn test_part1_challenge() {
+        let input = read_input(14, false, 1).unwrap();
+        assert_eq!(Day.part1(&input), Some(108840))
+    }
+    #[test]
+    fn test_part2_example() {
+        let input = read_input(14, true, 2).unwrap();
+        assert_eq!(Day.part2(&input), Some(64))
+    }
+    #[test]
+    fn test_part2_challenge() {
+        let input = read_input(14, false, 2).unwrap();
+        assert_eq!(Day.part2(&input), Some(103445))
     }
 }

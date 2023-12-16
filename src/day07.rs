@@ -121,7 +121,7 @@ impl FromStr for Hand {
         let (cards, bid) = s.split_once(' ').unwrap();
         let cards = cards
             .chars()
-            .map(|s| s.to_string().parse::<Card>().unwrap())
+            .map(|s| s.into())
             .collect::<Vec<Card>>();
         let bid = bid.parse::<usize>().unwrap();
         Ok(Self::new(cards, bid))
@@ -179,25 +179,23 @@ impl Card {
     }
 }
 
-impl FromStr for Card {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "2" => Ok(Self::C2),
-            "3" => Ok(Self::C3),
-            "4" => Ok(Self::C4),
-            "5" => Ok(Self::C5),
-            "6" => Ok(Self::C6),
-            "7" => Ok(Self::C7),
-            "8" => Ok(Self::C8),
-            "9" => Ok(Self::C9),
-            "T" => Ok(Self::CT),
-            "J" => Ok(Self::CJ),
-            "Q" => Ok(Self::CQ),
-            "K" => Ok(Self::CK),
-            "A" => Ok(Self::CA),
-            _ => Err(()),
+impl From<char> for Card {
+    fn from(value: char) -> Self {
+        match value {
+            '2' => Self::C2,
+            '3' => Self::C3,
+            '4' => Self::C4,
+            '5' => Self::C5,
+            '6' => Self::C6,
+            '7' => Self::C7,
+            '8' => Self::C8,
+            '9' => Self::C9,
+            'T' => Self::CT,
+            'J' => Self::CJ,
+            'Q' => Self::CQ,
+            'K' => Self::CK,
+            'A' => Self::CA,
+            _ => unreachable!("Invalid card"),
         }
     }
 }

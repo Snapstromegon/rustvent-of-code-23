@@ -1,3 +1,4 @@
+use rayon::prelude::*;
 use std::{fmt::Display, str::FromStr};
 
 use crate::solution::Solution;
@@ -15,32 +16,44 @@ impl Solution for Day {
         let map = input.parse::<Map>().unwrap();
         let row_count = map.tiles.len();
         let col_count = map.tiles[0].len();
-        let mut max_visits = 0;
-        for i in 0..row_count {
-            let mut map_l = map.clone();
-            map_l.calc_visits((i, 0, Direction::Right));
-            if map_l.count_visited() > max_visits {
-                max_visits = map_l.count_visited();
-            }
-            let mut map_r = map.clone();
-            map_r.calc_visits((i, col_count - 1, Direction::Left));
-            if map_r.count_visited() > max_visits {
-                max_visits = map_r.count_visited();
-            }
-        }
-        for i in 0..col_count {
-            let mut map_t = map.clone();
-            map_t.calc_visits((0, i, Direction::Bottom));
-            if map_t.count_visited() > max_visits {
-                max_visits = map_t.count_visited();
-            }
-            let mut map_b = map.clone();
-            map_b.calc_visits((row_count - 1, i, Direction::Top));
-            if map_b.count_visited() > max_visits {
-                max_visits = map_b.count_visited();
-            }
-        }
-        Some(max_visits)
+        let max_l = (0..row_count)
+            .into_par_iter()
+            .map(|i| {
+                let mut map_l = map.clone();
+                map_l.calc_visits((i, 0, Direction::Right));
+                map_l.count_visited()
+            })
+            .max()
+            .unwrap();
+        let max_r = (0..row_count)
+            .into_par_iter()
+            .map(|i| {
+                let mut map_r = map.clone();
+                map_r.calc_visits((i, col_count - 1, Direction::Left));
+                map_r.count_visited()
+            })
+            .max()
+            .unwrap();
+        let max_t = (0..col_count)
+            .into_par_iter()
+            .map(|i| {
+                let mut map_t = map.clone();
+                map_t.calc_visits((0, i, Direction::Bottom));
+                map_t.count_visited()
+            })
+            .max()
+            .unwrap();
+        let max_b = (0..col_count)
+            .into_par_iter()
+            .map(|i| {
+                let mut map_b = map.clone();
+                map_b.calc_visits((row_count - 1, i, Direction::Top));
+                map_b.count_visited()
+            })
+            .max()
+            .unwrap();
+
+        Some(max_l.max(max_r).max(max_t).max(max_b))
     }
 }
 

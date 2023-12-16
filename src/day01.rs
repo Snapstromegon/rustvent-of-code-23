@@ -1,4 +1,5 @@
 use crate::solution::Solution;
+use rayon::prelude::*;
 
 pub struct Day;
 

@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::fmt;
 use std::{fmt::Display, str::FromStr};
+use rayon::prelude::*;
 
 use crate::solution::Solution;
 
@@ -9,13 +10,13 @@ pub struct Day;
 impl Solution for Day {
     fn part1(&self, input: &str) -> Option<usize> {
         let spring_sets: Vec<SpringSet> = input.lines().map(|line| line.parse().unwrap()).collect();
-        Some(spring_sets.iter().map(|s| s.count_possibles()).sum())
+        Some(spring_sets.par_iter().map(|s| s.count_possibles()).sum())
     }
 
     fn part2(&self, input: &str) -> Option<usize> {
         let spring_sets: Vec<SpringSet> = input.lines().map(|line| line.parse().unwrap()).collect();
-        let unfolded: Vec<SpringSet> = spring_sets.iter().map(|s| s.unfold()).collect();
-        Some(unfolded.iter().map(|s| s.count_possibles()).sum())
+        let unfolded: Vec<SpringSet> = spring_sets.par_iter().map(|s| s.unfold()).collect();
+        Some(unfolded.par_iter().map(|s| s.count_possibles()).sum())
     }
 }
 

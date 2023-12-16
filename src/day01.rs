@@ -8,11 +8,10 @@ impl Solution for Day {
             input
                 .lines()
                 .map(|line| {
-                    let digits = line.chars().filter(|c| c.is_numeric());
-                    let first = digits.clone().next().unwrap();
-                    let last = digits.last().unwrap();
-                    let number = first.to_string() + &last.to_string();
-                    number.parse::<usize>().unwrap()
+                    let mut digits = line.chars().filter(|c| c.is_numeric()).peekable();
+                    let first: usize = digits.peek().unwrap().to_digit(10).unwrap() as usize;
+                    let last: usize = digits.last().unwrap().to_digit(10).unwrap() as usize;
+                    first * 10 + last
                 })
                 .sum::<usize>(),
         )
@@ -50,9 +49,7 @@ impl Solution for Day {
                         }
                     }
 
-                    (earliest_word.to_string() + &latest_word.to_string())
-                        .parse::<usize>()
-                        .unwrap()
+                    earliest_word * 10 + latest_word
                 })
                 .sum(),
         )

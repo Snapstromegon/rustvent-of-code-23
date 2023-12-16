@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{collections::HashSet, str::FromStr};
 
 use crate::solution::Solution;
 
@@ -10,7 +10,7 @@ impl Solution for Day {
             input
                 .lines()
                 .map(|s| s.parse::<Card>().unwrap())
-                .map(|card| 2usize.pow(card.number_of_winning() as u32) / 2)
+                .map(|card| (1 << card.winning_count) / 2)
                 .sum(),
         )
     }
@@ -22,7 +22,7 @@ impl Solution for Day {
             .collect::<Vec<Card>>();
         let mut card_counts: Vec<usize> = (0..cards.len()).map(|_| 1).collect();
         for i in 0..cards.len() {
-            let card_points = cards[i].number_of_winning();
+            let card_points = cards[i].winning_count;
             for j in 0..card_points {
                 if i + j + 1 < card_counts.len() {
                     card_counts[i + j + 1] += card_counts[i];
@@ -35,17 +35,7 @@ impl Solution for Day {
 
 #[derive(Debug, Clone)]
 struct Card {
-    winning: Vec<usize>,
-    actual: Vec<usize>,
-}
-
-impl Card {
-    pub fn number_of_winning(&self) -> usize {
-        self.actual
-            .iter()
-            .filter(|n| self.winning.contains(n))
-            .count()
-    }
+    winning_count: usize,
 }
 
 impl FromStr for Card {
@@ -57,12 +47,13 @@ impl FromStr for Card {
         let winning = winning
             .split_whitespace()
             .map(|s| s.parse::<usize>().unwrap())
-            .collect::<Vec<usize>>();
-        let actual = actual
+            .collect::<HashSet<usize>>();
+        let winning_count = actual
             .split_whitespace()
             .map(|s| s.parse::<usize>().unwrap())
-            .collect::<Vec<usize>>();
-        Ok(Card { winning, actual })
+            .filter(|n| winning.contains(n))
+            .count();
+        Ok(Card { winning_count })
     }
 }
 

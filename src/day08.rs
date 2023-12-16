@@ -1,4 +1,4 @@
-use std::{collections::HashMap, str::FromStr};
+use std::collections::HashMap;
 
 use crate::solution::Solution;
 
@@ -10,7 +10,7 @@ impl Solution for Day {
             .split_once("\r\n\r\n")
             .or_else(|| input.split_once("\n\n"))
             .unwrap();
-        let map: Map = rest.parse().unwrap();
+        let map: Map = rest.into();
         let path: Vec<Direction> = path.chars().map(|c| c.into()).collect();
         if map.mapping.contains_key("AAA") {
             let mut curr = "AAA";
@@ -31,7 +31,7 @@ impl Solution for Day {
             .split_once("\r\n\r\n")
             .or_else(|| input.split_once("\n\n"))
             .unwrap();
-        let map: Map = rest.parse().unwrap();
+        let map: Map = rest.into();
         let path: Vec<Direction> = path.chars().map(|c| c.into()).collect();
         let starts: Vec<&str> = map
             .mapping
@@ -43,7 +43,7 @@ impl Solution for Day {
         let mut z_pos = HashMap::new();
 
         for start in starts.clone() {
-            let mut loop_detector: HashMap<(String, Direction, usize), usize> = HashMap::new();
+            let mut loop_detector: HashMap<(&str, Direction, usize), usize> = HashMap::new();
             let mut curr = start;
             z_pos.insert(start, Vec::new());
             for i in 0..100_000 {
@@ -52,7 +52,7 @@ impl Solution for Day {
                 }
                 let path_pos = i % path.len();
                 let dir = path[path_pos];
-                let state = (curr.to_string(), dir, path_pos);
+                let state = (curr, dir, path_pos);
                 if let Some(loop_start) = loop_detector.get(&state) {
                     loops.push((
                         start,
@@ -110,57 +110,50 @@ impl From<char> for Direction {
 }
 
 #[derive(Debug)]
-struct Map {
-    mapping: HashMap<String, Mapping>,
+struct Map<'a> {
+    mapping: HashMap<&'a str, Mapping<'a>>,
 }
 
-impl<'a> Map {
+impl<'a> Map<'a> {
     pub fn step(&'a self, from: &str, dir: Direction) -> &'a str {
         self.mapping.get(from).unwrap().step(dir)
     }
 }
 
-impl FromStr for Map {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(Self {
+impl<'a> From<&'a str> for Map<'a> {
+    fn from(value: &'a str) -> Self {
+        Self {
             mapping: HashMap::from_iter(
-                s.lines()
-                    .map(|line| line.parse::<Mapping>().unwrap())
-                    .map(|mapping| (mapping.from.clone(), mapping)),
+                value
+                    .lines()
+                    .map(Mapping::from)
+                    .map(|mapping| (mapping.from, mapping)),
             ),
-        })
-    }
-}
-
-#[derive(Debug)]
-struct Mapping {
-    from: String,
-    left: String,
-    right: String,
-}
-
-impl<'a> Mapping {
-    pub fn step(&'a self, dir: Direction) -> &'a str {
-        match dir {
-            Direction::Left => &self.left,
-            Direction::Right => &self.right,
         }
     }
 }
 
-impl FromStr for Mapping {
-    type Err = ();
+#[derive(Debug)]
+struct Mapping<'a> {
+    from: &'a str,
+    left: &'a str,
+    right: &'a str,
+}
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let (from, rest) = s.split_once(" = ").unwrap();
+impl<'a> Mapping<'a> {
+    pub fn step(&'a self, dir: Direction) -> &'a str {
+        match dir {
+            Direction::Left => self.left,
+            Direction::Right => self.right,
+        }
+    }
+}
+
+impl<'a> From<&'a str> for Mapping<'a> {
+    fn from(value: &'a str) -> Self {
+        let (from, rest) = value.split_once(" = ").unwrap();
         let (left, right) = rest[1..rest.len() - 1].split_once(", ").unwrap();
-        Ok(Self {
-            from: from.to_string(),
-            left: left.to_string(),
-            right: right.to_string(),
-        })
+        Self { from, left, right }
     }
 }
 

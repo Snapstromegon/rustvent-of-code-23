@@ -47,20 +47,20 @@ fn dijkstra(grid: Vec<Vec<u8>>, minstep: isize, maxstep: isize) -> isize {
             .into_iter()
             .filter(|&step_dir| dir != step_dir && dir != (-step_dir.0, -step_dir.1))
             .filter(|&step_dir| {
-                let new_row = row + (step_dir.0 * minstep) as usize;
-                let new_col = col + (step_dir.1 * minstep) as usize;
+                let new_row = (row as isize + step_dir.0 * minstep) as usize;
+                let new_col = (col as isize + step_dir.1 * minstep) as usize;
                 new_row < max_rows && new_col < max_cols
             });
         for (d_row, d_col) in valid_dirs {
             let mut next_cost = -cost;
             for dist in 1..minstep {
-                let new_row = row + (d_row * dist) as usize;
-                let new_col = col + (d_col * dist) as usize;
+                let new_row = (row as isize + d_row * dist) as usize;
+                let new_col = (col as isize + d_col * dist) as usize;
                 next_cost += (grid[new_row][new_col]) as isize;
             }
             for dist in minstep..=maxstep {
-                let new_row = row + (d_row * dist) as usize;
-                let new_col = col + (d_col * dist) as usize;
+                let new_row = (row as isize + d_row * dist) as usize;
+                let new_col = (col as isize + d_col * dist) as usize;
                 if new_row >= max_rows || new_col >= max_cols {
                     continue;
                 }
@@ -96,7 +96,7 @@ mod tests {
     #[test]
     fn test_part2_example() {
         let input = read_input(17, true, 2).unwrap();
-        assert_eq!(Day.part2(&input), Some(71));
+        assert_eq!(Day.part2(&input), Some(94));
     }
     #[test]
     fn test_part2_challenge() {

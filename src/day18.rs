@@ -15,13 +15,15 @@ impl Solution for Day {
 }
 
 fn execute(input: &str, parser: fn(&str) -> Instruction) -> usize {
-    let instructions: Vec<Instruction> = input.lines().map(|line| parser(line)).collect();
+    let instructions: Vec<Instruction> = input.lines().map(parser).collect();
+    // Solve using Green's theorem for polygons
     let mut x = 0;
     let mut perimeter = 0;
     let mut area = 0;
     for instruction in instructions {
-        let (dy, dx) = instruction.direction.into();
-        let (dy, dx) = (dy * instruction.distance, dx * instruction.distance);
+        let (dy, dx) = instruction
+            .direction
+            .get_scaled_vector(instruction.distance);
         x += dx;
         perimeter += instruction.distance;
         area += x * dy;
@@ -65,13 +67,13 @@ enum Direction {
     Right,
 }
 
-impl From<Direction> for (isize, isize) {
-    fn from(value: Direction) -> Self {
-        match value {
-            Direction::Down => (1, 0),
-            Direction::Up => (-1, 0),
-            Direction::Right => (0, 1),
-            Direction::Left => (0, -1),
+impl Direction {
+    fn get_scaled_vector(&self, scale: isize) -> (isize, isize) {
+        match self {
+            Direction::Down => (scale, 0),
+            Direction::Up => (-scale, 0),
+            Direction::Right => (0, scale),
+            Direction::Left => (0, -scale),
         }
     }
 }

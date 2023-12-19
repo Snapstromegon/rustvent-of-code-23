@@ -8,6 +8,7 @@ pub fn read_input(day: usize, example: bool, part: u8) -> Option<String> {
             .find(|path| Path::new(path).exists())?,
     )
     .ok()
+    .map(|s| s.replace('\r', ""))
 }
 
 fn get_possible_paths(day: usize, example: bool, part: u8) -> Vec<String> {

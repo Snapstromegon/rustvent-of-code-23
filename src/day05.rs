@@ -4,7 +4,7 @@ pub struct Day;
 
 impl Solution for Day {
     fn part1(&self, input: &str) -> Option<usize> {
-        let mut blocks = input.split("\r\n\r\n").flat_map(|s| s.split("\n\n"));
+        let mut blocks = input.split("\n\n");
         let seeds = blocks
             .next()
             .unwrap()

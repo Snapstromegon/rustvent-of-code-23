@@ -6,18 +6,18 @@ pub struct Day;
 
 impl Solution for Day {
     fn part1(&self, input: &str) -> Option<usize> {
-        let blocks = input
-            .split("\r\n\r\n")
-            .flat_map(|input| input.split("\n\n"));
-        let maps: Vec<Map> = blocks.map(|block| block.parse().unwrap()).collect();
+        let maps: Vec<Map> = input
+            .split("\n\n")
+            .map(|block| block.parse().unwrap())
+            .collect();
         Some(maps.iter().map(|m| m.get_summary()).sum())
     }
 
     fn part2(&self, input: &str) -> Option<usize> {
-        let blocks = input
-            .split("\r\n\r\n")
-            .flat_map(|input| input.split("\n\n"));
-        let maps: Vec<Map> = blocks.map(|block| block.parse().unwrap()).collect();
+        let maps: Vec<Map> = input
+            .split("\n\n")
+            .map(|block| block.parse().unwrap())
+            .collect();
         Some(
             maps.iter()
                 .map(|m| {

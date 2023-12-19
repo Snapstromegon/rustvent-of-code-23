@@ -7,8 +7,7 @@ pub struct Day;
 impl Solution for Day {
     fn part1(&self, input: &str) -> Option<usize> {
         let (path, rest) = input
-            .split_once("\r\n\r\n")
-            .or_else(|| input.split_once("\n\n"))
+            .split_once("\n\n")
             .unwrap();
         let map: Map = rest.into();
         let path: Vec<Direction> = path.chars().map(|c| c.into()).collect();
@@ -28,8 +27,7 @@ impl Solution for Day {
 
     fn part2(&self, input: &str) -> Option<usize> {
         let (path, rest) = input
-            .split_once("\r\n\r\n")
-            .or_else(|| input.split_once("\n\n"))
+            .split_once("\n\n")
             .unwrap();
         let map: Map = rest.into();
         let path: Vec<Direction> = path.chars().map(|c| c.into()).collect();

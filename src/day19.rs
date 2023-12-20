@@ -295,26 +295,26 @@ mod tests {
     #[test]
     fn test_part1_example() {
         if let Some(input) = read_input(19, true, 1) {
-            assert_eq!(Day.part1(&input), None);
+            assert_eq!(Day.part1(&input), Some(19114));
         }
     }
     #[test]
     fn test_part1_challenge() {
         if let Some(input) = read_input(19, false, 1) {
-            assert_eq!(Day.part1(&input), None);
+            assert_eq!(Day.part1(&input), Some(398527));
         }
     }
 
     #[test]
     fn test_part2_example() {
         if let Some(input) = read_input(19, true, 2) {
-            assert_eq!(Day.part2(&input), None);
+            assert_eq!(Day.part2(&input), Some(167409079868000));
         }
     }
     #[test]
     fn test_part2_challenge() {
         if let Some(input) = read_input(19, false, 2) {
-            assert_eq!(Day.part2(&input), None);
+            assert_eq!(Day.part2(&input), Some(133973513090020));
         }
     }
 }

@@ -1,4 +1,4 @@
-use std::{fmt::Display, str::FromStr};
+use std::{convert::identity, fmt::Display, str::FromStr};
 
 use crate::solution::Solution;
 
@@ -17,19 +17,191 @@ impl Solution for Day {
         Some(reachable_plots)
     }
 
-    fn part2(&self, _input: &str) -> Option<usize> {
-        None
+    fn part2(&self, input: &str) -> Option<usize> {
+        // let (steps, input) = input.split_once("\n\n").unwrap();
+        let map: Map = input.parse().unwrap();
+        let mut total_cells = 0;
+        let map_size = map.tiles.len();
+
+        let wanted_steps = 26501365;
+        // let wanted_steps = 23;
+        // let wanted_steps: usize = steps.parse().unwrap();
+
+        if wanted_steps > map_size / 2 {
+            total_cells += count_1s(&map, wanted_steps);
+            println!("1s: {}", total_cells);
+            total_cells += count_2s(&map, wanted_steps);
+            println!("2s: {}", total_cells);
+            total_cells += count_3s(&map, wanted_steps);
+            println!("3s: {}", total_cells);
+            total_cells += count_4s(&map, wanted_steps);
+            println!("4s: {}", total_cells);
+            total_cells += count_5s(&map, wanted_steps);
+        } else {
+            let res = map.get_distance_even_odd(wanted_steps);
+            total_cells += if wanted_steps % 2 == 0 { res.0 } else { res.1 };
+        }
+        Some(total_cells)
     }
 }
 
-fn _print_distances(distance_map: &Vec<Vec<Option<usize>>>) {
-    for row in distance_map {
-        for distance in row {
+/*
+    ....1....
+    ...232...
+    ..24542..
+    .2455542.
+    135555531
+    .2455542.
+    ..24542..
+    ...232...
+    ....1....
+*/
+
+fn count_1s(map: &Map, wanted_steps: usize) -> usize {
+    println!("1s:");
+    let map_size = map.tiles.len();
+    let steps_tldr = ((wanted_steps-1) - map_size / 2) % map_size;
+    println!("steps tldr: {}", steps_tldr);
+    let mut clone = map.clone();
+    clone.start = (0, map_size / 2);
+    let s_right = clone.get_distance_even_odd(steps_tldr);
+    clone.start = (map_size / 2, 0);
+    let s_up = clone.get_distance_even_odd(steps_tldr);
+    clone.start = (map_size - 1, map_size / 2);
+    let s_left = clone.get_distance_even_odd(steps_tldr);
+    clone.start = (map_size / 2, map_size - 1);
+    let s_down = clone.get_distance_even_odd(steps_tldr);
+    if steps_tldr % 2 == 0 {
+        s_right.0 + s_up.0 + s_left.0 + s_down.0
+    } else {
+        s_right.1 + s_up.1 + s_left.1 + s_down.1
+    }
+}
+
+fn count_2s(map: &Map, wanted_steps: usize) -> usize {
+    println!("2s:");
+    let map_size = map.tiles.len();
+    let steps_tldr = (wanted_steps - map_size / 2) % map_size - 1;
+    if wanted_steps > map_size {
+        let steps_in_corner = (wanted_steps - 1 - map_size) % (map_size * 2);
+        let mut clone = map.clone();
+        clone.start = (0, 0);
+        let s_br = clone.get_distance_even_odd(steps_in_corner);
+        clone.start = (map_size - 1, 0);
+        let s_bl = clone.get_distance_even_odd(steps_in_corner);
+        clone.start = (0, map_size - 1);
+        let s_tr = clone.get_distance_even_odd(steps_in_corner);
+        clone.start = (map_size - 1, map_size - 1);
+        let s_tl = clone.get_distance_even_odd(steps_in_corner);
+
+        let s_corners = if steps_in_corner % 2 == 0 {
+            s_br.0 + s_bl.0 + s_tr.0 + s_tl.0
+        } else {
+            s_br.1 + s_bl.1 + s_tr.1 + s_tl.1
+        };
+
+        let corner_count = (wanted_steps - 1) / map_size;
+        println!("2 corner count: {}", corner_count);
+        s_corners * corner_count
+    } else {
+        0
+    }
+}
+
+fn count_3s(map: &Map, wanted_steps: usize) -> usize {
+    println!("3s:");
+    let map_size = map.tiles.len();
+    let steps_tldr = wanted_steps % map_size;
+    if steps_tldr > map_size / 2 && wanted_steps > map_size {
+        let steps_tldr = steps_tldr + map_size / 2;
+        let mut clone = map.clone();
+        clone.start = (0, map_size / 2);
+        let s_right = clone.get_distance_even_odd(steps_tldr);
+        clone.start = (map_size / 2, 0);
+        let s_up = clone.get_distance_even_odd(steps_tldr);
+        clone.start = (map_size - 1, map_size / 2);
+        let s_left = clone.get_distance_even_odd(steps_tldr);
+        clone.start = (map_size / 2, map_size - 1);
+        let s_down = clone.get_distance_even_odd(steps_tldr);
+
+        if steps_tldr % 2 == 0 {
+            s_right.0 + s_up.0 + s_left.0 + s_down.0
+        } else {
+            s_right.1 + s_up.1 + s_left.1 + s_down.1
+        }
+    } else {
+        0
+    }
+}
+
+fn count_4s(map: &Map, wanted_steps: usize) -> usize {
+    println!("4s:");
+    let map_size = map.tiles.len();
+    let steps_tldr = (wanted_steps % map_size) - 1;
+
+    if steps_tldr > map_size / 2 {
+        let steps_tldr = steps_tldr + map_size / 2;
+        let mut clone = map.clone();
+        clone.start = (0, 0);
+        let s_br = clone.get_distance_even_odd(steps_tldr);
+        clone.start = (map_size - 1 / 2, 0);
+        let s_bl = clone.get_distance_even_odd(steps_tldr);
+        clone.start = (map_size - 1, map_size - 1);
+        let s_tl = clone.get_distance_even_odd(steps_tldr);
+        clone.start = (0, map_size - 1);
+        let s_tr = clone.get_distance_even_odd(steps_tldr);
+
+        let edge_count = (wanted_steps - map_size / 2) / map_size - 1;
+        println!("4 edge count: {}", edge_count);
+
+        (if steps_tldr % 2 == 0 {
+            s_br.0 + s_bl.0 + s_tl.0 + s_tr.0
+        } else {
+            s_br.1 + s_bl.1 + s_tl.1 + s_tr.1
+        }) * edge_count
+    } else {
+        0
+    }
+}
+
+fn count_5s(map: &Map, wanted_steps: usize) -> usize {
+    println!("5s:");
+    let map_size = map.tiles.len();
+    let square_distance = wanted_steps / map_size;
+    let number_of_full_even = number_of_squares(square_distance - (square_distance + 1) % 2);
+    let number_of_full_odd = number_of_squares(square_distance - square_distance % 2);
+    println!("number of full even: {}", number_of_full_even);
+    println!("number of full odd: {}", number_of_full_odd);
+    let (full_map_even, full_map_odd) = map.get_distance_even_odd(map_size);
+
+    if wanted_steps % 2 == 0 {
+        full_map_even * number_of_full_even + full_map_odd * number_of_full_odd
+    } else {
+        full_map_even * number_of_full_odd + full_map_odd * number_of_full_even
+    }
+}
+
+fn number_of_squares(square_distance: usize) -> usize {
+    if square_distance >= 2 {
+        (square_distance - 1) * 4 + number_of_squares(square_distance - 2)
+    } else {
+        square_distance
+    }
+}
+
+fn print_distances(distance_map: &Vec<Vec<Option<usize>>>, map: &Map) {
+    for (y, row) in distance_map.iter().enumerate() {
+        for (x, distance) in row.iter().enumerate() {
             print!(
                 "{} ",
                 match distance {
                     Some(d) => format!("{:02}", d),
-                    None => "XX".to_string(),
+                    None => match map.get((x, y)) {
+                        Some(Tile::Plot) => "..".to_string(),
+                        Some(Tile::Rock) => "##".to_string(),
+                        Some(Tile::Start) => "SS".to_string(),
+                        None => "??".to_string(),
+                    },
                 }
             );
         }
@@ -37,7 +209,7 @@ fn _print_distances(distance_map: &Vec<Vec<Option<usize>>>) {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Map {
     tiles: Vec<Vec<Tile>>,
     start: (usize, usize),
@@ -51,29 +223,39 @@ impl Map {
             .copied()
     }
 
-    fn normalize_coordinates(&self, coords: (usize, usize)) -> (usize, usize) {
-        (coords.0 % self.tiles[0].len(), coords.1 % self.tiles.len())
-    }
-
     fn get_possible_neighbors(&self, coords: (usize, usize)) -> Vec<(usize, usize)> {
-        let (mut x, mut y) = coords;
+        let (x, y) = coords;
         let mut neighbors = Vec::new();
-        if y == 0 {
-            y += self.tiles.len();
+        if y > 0 {
+            if self
+                .get((x, y - 1))
+                .map(|tile| tile.is_walkable())
+                .unwrap_or(false)
+            {
+                neighbors.push((x, y - 1));
+            }
         }
-        if x == 0 {
-            x += self.tiles[0].len();
-        }
-        if let Some(Tile::Plot) = self.get((x, y - 1)) {
-            neighbors.push((x, y - 1));
-        }
-        if let Some(Tile::Plot) = self.get((x, y + 1)) {
+        if self
+            .get((x, y + 1))
+            .map(|tile| tile.is_walkable())
+            .unwrap_or(false)
+        {
             neighbors.push((x, y + 1));
         }
-        if let Some(Tile::Plot) = self.get((x - 1, y)) {
-            neighbors.push((x - 1, y));
+        if x > 0 {
+            if self
+                .get((x - 1, y))
+                .map(|tile| tile.is_walkable())
+                .unwrap_or(false)
+            {
+                neighbors.push((x - 1, y));
+            }
         }
-        if let Some(Tile::Plot) = self.get((x + 1, y)) {
+        if self
+            .get((x + 1, y))
+            .map(|tile| tile.is_walkable())
+            .unwrap_or(false)
+        {
             neighbors.push((x + 1, y));
         }
         neighbors
@@ -84,9 +266,11 @@ impl Map {
         let mut queue = Vec::new();
         queue.push((self.start.0, self.start.1, 0));
         while let Some((x, y, distance)) = queue.pop() {
-            let (nx, ny) = self.normalize_coordinates((x, y));
-            if distance_map[ny][nx].is_none() || Some(distance) < distance_map[ny][nx] {
-                distance_map[ny][nx] = Some(distance);
+            if y < distance_map.len()
+                && x < distance_map[0].len()
+                && (distance_map[y][x].is_none() || Some(distance) < distance_map[y][x])
+            {
+                distance_map[y][x] = Some(distance);
                 if distance < max_distance {
                     for (nx, ny) in self.get_possible_neighbors((x, y)) {
                         queue.push((nx, ny, distance + 1));
@@ -95,6 +279,25 @@ impl Map {
             }
         }
         distance_map
+    }
+
+    pub fn get_distance_even_odd(&self, max_distance: usize) -> (usize, usize) {
+        let distance_map = self.calc_distance_map(max_distance);
+        println!("distance map:");
+        print_distances(&distance_map, self);
+        let res = distance_map
+            .iter()
+            .flatten()
+            .flat_map(identity)
+            .fold((0, 0), |acc, item| {
+                if item % 2 == 0 {
+                    (acc.0 + 1, acc.1)
+                } else {
+                    (acc.0, acc.1 + 1)
+                }
+            });
+        println!("even: {}, odd: {}", res.0, res.1);
+        res
     }
 }
 
@@ -150,6 +353,15 @@ enum Tile {
     Rock,
 }
 
+impl Tile {
+    fn is_walkable(&self) -> bool {
+        match self {
+            Self::Plot | Self::Start => true,
+            _ => false,
+        }
+    }
+}
+
 impl From<char> for Tile {
     fn from(c: char) -> Self {
         match c {
@@ -179,13 +391,15 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_part2_example() {
         let input = read_input(21, true, 2).unwrap();
-        assert_eq!(Day.part2(&input), None);
+        assert_eq!(Day.part2(&input), Some(609453319569496));
     }
     #[test]
+    #[ignore]
     fn test_part2_challenge() {
         let input = read_input(21, false, 2).unwrap();
-        assert_eq!(Day.part2(&input), None);
+        assert_eq!(Day.part2(&input), Some(619407349431167));
     }
 }

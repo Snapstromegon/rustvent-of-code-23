@@ -208,12 +208,12 @@ mod tests {
     #[test]
     fn test_part1_example() {
         let input = read_input(20, true, 1).unwrap();
-        assert_eq!(Day.part1(&input), None);
+        assert_eq!(Day.part1(&input), Some(32000000));
     }
     #[test]
     fn test_part1_challenge() {
         let input = read_input(20, false, 1).unwrap();
-        assert_eq!(Day.part1(&input), None);
+        assert_eq!(Day.part1(&input), Some(666795063));
     }
 
     #[test]

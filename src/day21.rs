@@ -1,4 +1,4 @@
-use std::{convert::identity, fmt::Display, str::FromStr};
+use std::{fmt::Display, str::FromStr};
 
 use crate::solution::Solution;
 
@@ -60,7 +60,7 @@ impl Solution for Day {
 fn count_1s(map: &Map, wanted_steps: usize) -> usize {
     println!("1s:");
     let map_size = map.tiles.len();
-    let steps_tldr = ((wanted_steps-1) - map_size / 2) % map_size;
+    let steps_tldr = ((wanted_steps - 1) - map_size / 2) % map_size;
     println!("steps tldr: {}", steps_tldr);
     let mut clone = map.clone();
     clone.start = (0, map_size / 2);
@@ -81,7 +81,6 @@ fn count_1s(map: &Map, wanted_steps: usize) -> usize {
 fn count_2s(map: &Map, wanted_steps: usize) -> usize {
     println!("2s:");
     let map_size = map.tiles.len();
-    let steps_tldr = (wanted_steps - map_size / 2) % map_size - 1;
     if wanted_steps > map_size {
         let steps_in_corner = (wanted_steps - 1 - map_size) % (map_size * 2);
         let mut clone = map.clone();
@@ -144,7 +143,7 @@ fn count_4s(map: &Map, wanted_steps: usize) -> usize {
         let mut clone = map.clone();
         clone.start = (0, 0);
         let s_br = clone.get_distance_even_odd(steps_tldr);
-        clone.start = (map_size - 1 / 2, 0);
+        clone.start = ((map_size - 1) / 2, 0);
         let s_bl = clone.get_distance_even_odd(steps_tldr);
         clone.start = (map_size - 1, map_size - 1);
         let s_tl = clone.get_distance_even_odd(steps_tldr);
@@ -189,7 +188,7 @@ fn number_of_squares(square_distance: usize) -> usize {
     }
 }
 
-fn print_distances(distance_map: &Vec<Vec<Option<usize>>>, map: &Map) {
+fn print_distances(distance_map: &[Vec<Option<usize>>], map: &Map) {
     for (y, row) in distance_map.iter().enumerate() {
         for (x, distance) in row.iter().enumerate() {
             print!(
@@ -226,14 +225,13 @@ impl Map {
     fn get_possible_neighbors(&self, coords: (usize, usize)) -> Vec<(usize, usize)> {
         let (x, y) = coords;
         let mut neighbors = Vec::new();
-        if y > 0 {
-            if self
+        if y > 0
+            && self
                 .get((x, y - 1))
                 .map(|tile| tile.is_walkable())
                 .unwrap_or(false)
-            {
-                neighbors.push((x, y - 1));
-            }
+        {
+            neighbors.push((x, y - 1));
         }
         if self
             .get((x, y + 1))
@@ -242,14 +240,13 @@ impl Map {
         {
             neighbors.push((x, y + 1));
         }
-        if x > 0 {
-            if self
+        if x > 0
+            && self
                 .get((x - 1, y))
                 .map(|tile| tile.is_walkable())
                 .unwrap_or(false)
-            {
-                neighbors.push((x - 1, y));
-            }
+        {
+            neighbors.push((x - 1, y));
         }
         if self
             .get((x + 1, y))
@@ -288,7 +285,7 @@ impl Map {
         let res = distance_map
             .iter()
             .flatten()
-            .flat_map(identity)
+            .flatten()
             .fold((0, 0), |acc, item| {
                 if item % 2 == 0 {
                     (acc.0 + 1, acc.1)
@@ -355,10 +352,7 @@ enum Tile {
 
 impl Tile {
     fn is_walkable(&self) -> bool {
-        match self {
-            Self::Plot | Self::Start => true,
-            _ => false,
-        }
+        matches!(self, Self::Plot | Self::Start)
     }
 }
 

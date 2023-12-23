@@ -109,10 +109,9 @@ impl Brick {
 
         for x in self.min_x()..=self.max_x() {
             for y in self.min_y()..=self.max_y() {
-                let (level, id) = supported_blocks
+                let (level, id) = **supported_blocks
                     .get(&(x, y))
-                    .get_or_insert(&(0, None))
-                    .clone();
+                    .get_or_insert(&(0, None));
                 if level > max_supported_level {
                     max_supported_level = level;
                     supported_by = HashSet::new();

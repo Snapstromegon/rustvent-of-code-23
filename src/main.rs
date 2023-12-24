@@ -45,6 +45,7 @@ fn main() {
         21 => Some(Box::new(day21::Day)),
         22 => Some(Box::new(day22::Day)),
         23 => Some(Box::new(day23::Day)),
+        24 => Some(Box::new(day24::Day)),
         _ => None,
     };
     if let Some(solution) = solution {

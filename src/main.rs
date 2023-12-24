@@ -1,8 +1,10 @@
 use clap::Parser;
-
-use rustvent::*;
+pub mod days;
+pub mod solution;
 pub mod utils;
+
 use solution::Solution;
+use days::*;
 
 #[derive(Parser, Debug)]
 struct Args {
